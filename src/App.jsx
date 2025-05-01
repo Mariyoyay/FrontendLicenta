@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import './App.css'
+import Login from "./AuthenticationPages/Login.jsx";
+import Register from "./AuthenticationPages/Register.jsx";
+import {Provider} from "react-redux";
+import { store } from "./redux/store.jsx";
+import ProtectedRoute from "./AuthenticationPages/ProtectedRoute.jsx";
+import ProtectedTestPage from "./ProtectedTestPage.jsx";
+import LogoutButton from "./AuthenticationPages/LogoutButton.jsx";
+import MyDetails from "./MyDetails.jsx";
+import HomePage from "../HomePage.jsx";
+import NotFoundPage from "../NotFoundPage.jsx";
+import AdminGrantRolesPage from "./AdminGrantRolesPage.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <Provider store={store}>
+        <Router>
+          <Routes>
+              {/*Authentication Pages*/}
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<ProtectedRoute element={<LogoutButton />} />} />
+
+              {/*Home Page*/}
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<HomePage />} />
+
+              <Route path="/ptp" element={<ProtectedRoute element={<ProtectedTestPage />}/>} />
+              <Route path="/my-details" element={<ProtectedRoute element={<MyDetails />} />} />
+
+              <Route path="/admin" element={<ProtectedRoute permissions={["ROLE_ADMIN"]} element={<AdminGrantRolesPage />} />} />
+
+              {/*No Page Found*/}
+              <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
+      </Provider>
+  );
 }
 
-export default App
+export default App;

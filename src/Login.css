@@ -1,0 +1,87 @@
+/* Center everything */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+}
+
+/* Login box styles */
+.login-box {
+    border: 4px solid red;
+    border-radius: 40px;
+    padding: 40px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading style */
+.login-box h2 {
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+}
+
+/* Labels */
+.login-box label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px;
+}
+
+/* Inputs */
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 12px;
+    background-color: black;
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Button */
+.login-box button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.login-box button:hover {
+    background-color: darkred;
+}
+
+
+/* PHONE STUFF*/
+.phone-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.phone-input-group select,
+.phone-input-group input {
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background-color: black;
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.phone-input-group select {
+    width: 35%;
+}
+
+.phone-input-group input {
+    width: 65%;
+}
