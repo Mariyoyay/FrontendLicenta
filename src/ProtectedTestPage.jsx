@@ -8,6 +8,7 @@ function ProtectedTestPage() {
             <LogoutButton />
             <Link to="/my-details"><button>My Details</button></Link>
             <Link to="/admin"><button>AdminPage</button></Link>
+            <Link to="/doctor"><button>DoctorPage</button></Link>
         </>
     );
 }

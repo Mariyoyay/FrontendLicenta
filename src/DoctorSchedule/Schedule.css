@@ -1,0 +1,91 @@
+.schedule-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+.week-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.week-label {
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 4px;
+}
+
+.schedule-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.day-column {
+    background-color: #fff1ce;
+    border: 2px solid red;
+    border-radius: 30px 30px 0 0;
+    width: 160px;
+    position: relative;
+    padding: 10px;
+}
+
+.day-header {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.time-slots {
+    position: relative;
+    height: 780px; /* 13 slots * 60px */
+}
+
+.time-slot {
+    height: 60px;
+    border-bottom: 1px solid #333;
+    text-align: left;
+    padding-left: 5px;
+    font-size: 13px;
+    line-height: 60px;
+    cursor: pointer;
+}
+
+.appointment-block {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: royalblue;
+    color: white;
+    border-radius: 15px;
+    padding: 10px;
+    font-weight: bold;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.appointment-form {
+    margin-top: 20px;
+}
+
+.appointment-form input {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.appointment-form button {
+    padding: 6px 12px;
+    background-color: darkgreen;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.appointment-form button:hover {
+    background-color: green;
+}

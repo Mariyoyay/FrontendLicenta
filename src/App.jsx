@@ -11,6 +11,7 @@ import MyDetails from "./MyDetails.jsx";
 import HomePage from "../HomePage.jsx";
 import NotFoundPage from "../NotFoundPage.jsx";
 import AdminGrantRolesPage from "./AdminGrantRolesPage.jsx";
+import DoctorSchedulePage from "./DoctorSchedule/DoctorSchedulePage.jsx";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
               <Route path="/my-details" element={<ProtectedRoute element={<MyDetails />} />} />
 
               <Route path="/admin" element={<ProtectedRoute permissions={["ROLE_ADMIN"]} element={<AdminGrantRolesPage />} />} />
+
+              <Route path="/doctor" element={<ProtectedRoute permissions={["ROLE_EMPLOYEE", "ROLE_DOCTOR"]} element={<DoctorSchedulePage doctor={"mama@test.com"} />} />} />
 
               {/*No Page Found*/}
               <Route path="*" element={<NotFoundPage />} />

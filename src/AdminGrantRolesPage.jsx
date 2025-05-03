@@ -1,64 +1,56 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./AdminGrantRolesPage.css";
+import api from "./axios/api.jsx";
 
-const dummyUsers = [
-    {
-        id: 1,
-        name: "employee 1",
-        email: "1@g.com",
-        roles: ["ROLE_PATIENT", "ROLE_EMPLOYEE"],
-    },
-    {
-        id: 2,
-        name: "doctor 1",
-        email: "1@y.com",
-        roles: ["ROLE_PATIENT", "ROLE_EMPLOYEE", "ROLE_DOCTOR"],
-    },
-    {
-        id: 3,
-        name: "ADMIN",
-        email: "a@a.com",
-        roles: ["ROLE_ADMIN"],
-    },
-];
 
+// should be a get all roles form the backend :))))
 const roleList = ["ROLE_PATIENT", "ROLE_EMPLOYEE", "ROLE_DOCTOR", "ROLE_ADMIN"];
-
-function removeItemOnce(arr, value) {
-    var index = arr.indexOf(value);
-    if (index > -1) {
-        arr.splice(index, 1);
-    }
-    return arr;
-}
 
 const AdminGrantRolesPage = () => {
     const [searchBy, setSearchBy] = useState("Both");
     const [query, setQuery] = useState("");
-    const [users, setUsers] = useState(dummyUsers);
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+
+        const fetchUsers = async () => {
+            try{
+                const { data } = await api.get("api/users/getUsers");
+                setUsers(data);
+            } catch (error) {
+                console.error("Error fetching users: " + error);
+            }
+        }
+
+        void fetchUsers();
+    }, []);
+
 
     const filteredUsers = users.filter((user) => {
         const q = query.toLowerCase();
+        const name = user.firstName + ' ' + user.lastName;
+
         if (searchBy === "Email") return user.email.toLowerCase().includes(q);
-        if (searchBy === "Name") return user.name.toLowerCase().includes(q);
+        if (searchBy === "Name") return name.toLowerCase().includes(q);
         return (
             user.email.toLowerCase().includes(q) ||
-            user.name.toLowerCase().includes(q)
+            name.toLowerCase().includes(q)
         );
     });
 
-    const toggleRole = (userId, role) => {
-        setUsers((prev) =>
-            prev.map((user) =>
-                user.id === userId ? {
+    const toggleRole = async (user, role) => {
+        const hasRole = user.rolesAsString.includes(role);
+        const url = `/api/users/roles/manage/${user.email}/${hasRole ? 'remove' : 'add'}`;
 
-                    ...user,
-                    roles: user.roles.includes(role) ?
-                        user.roles.filter(r => r !== role) : [...user.roles, role],
+        const roles = [role];
 
-                } : user
-            )
-        );
+        try{
+            const {data: updatedUser} = !hasRole ? await api.post(url, roles) : await api.delete(url, {data: roles});
+            setUsers(prev => prev.map(u => (u.email === updatedUser.email ? updatedUser : u)));
+        } catch (error) {
+            console.error("Error fetching roles: " + error);
+        }
+
     };
 
     return (
@@ -89,11 +81,13 @@ const AdminGrantRolesPage = () => {
 
             {filteredUsers.map((user) => (
                 <div
-                    key={user.id}
+                    key={user.email}
                     className="user-card"
                 >
                     <div className="user-info">
-                        <strong>Name:</strong> {user.name}
+                        <strong>First Name:</strong> {user.firstName}
+                        <br />
+                        <strong>Last Name:</strong> {user.lastName}
                         <br />
                         <strong>Email:</strong> {user.email}
                     </div>
@@ -101,12 +95,12 @@ const AdminGrantRolesPage = () => {
                         {roleList.map((role) => (
                             <button
                                 key={role}
-                                onClick={() => toggleRole(user.id, role)}
-                                className={`role-button ${user.roles.includes(role) ? "enabled" : "disabled"}`}
+                                onClick={() => toggleRole(user, role)}
+                                className={`role-button ${user.rolesAsString.includes(role) ? "enabled" : "disabled"}`}
                             >
-                                {role}
+                                {role.substring(5)}
                                 <div style={{ fontSize: "0.75rem" }}>
-                                    {user.roles.includes(role) ? "enabled" : "disabled"}
+                                    {user.rolesAsString.includes(role) ? "enabled" : "disabled"}
                                 </div>
                             </button>
                         ))}

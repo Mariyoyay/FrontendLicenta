@@ -11,7 +11,6 @@ export const login = (credential) => async (dispatch) => {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
-                withCredentials: true,
             }
         );
         dispatch(loginSuccess(data));
@@ -22,10 +21,7 @@ export const login = (credential) => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
     try {
-        const { data } = await api.post("/api/auth/logout", null,
-            {
-                withCredentials: true,
-            });
+        const { data } = await api.post("/api/auth/logout");
         if (data.success) {
             dispatch(logoutSuccess());
         }
