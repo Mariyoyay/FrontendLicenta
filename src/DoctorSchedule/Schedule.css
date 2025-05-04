@@ -57,15 +57,18 @@
 
 .appointment-block {
     position: absolute;
-    left: 0;
+    left: 25%;
     right: 0;
     background-color: royalblue;
     color: white;
     border-radius: 15px;
-    padding: 10px;
+    /*padding: 10px;*/
     font-weight: bold;
     overflow: hidden;
     z-index: 2;
+    align-content: center;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .appointment-form {
@@ -77,15 +80,57 @@
     margin-right: 10px;
 }
 
-.appointment-form button {
-    padding: 6px 12px;
-    background-color: darkgreen;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
+.time-slots-container {
+    position: relative;
+    height: 780px; /* 13 hours * 60px */
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
 }
 
-.appointment-form button:hover {
-    background-color: green;
+.time-slots-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.time-line-row {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 1px; /* actual line height */
+}
+
+.time-label {
+    width: 50px;
+    text-align: right;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.time-line {
+    flex-grow: 1;
+    border-top: 2px solid black;
+    width: 100%;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: auto;
 }

@@ -8,8 +8,8 @@ import ProtectedRoute from "./AuthenticationPages/ProtectedRoute.jsx";
 import ProtectedTestPage from "./ProtectedTestPage.jsx";
 import LogoutButton from "./AuthenticationPages/LogoutButton.jsx";
 import MyDetails from "./MyDetails.jsx";
-import HomePage from "../HomePage.jsx";
-import NotFoundPage from "../NotFoundPage.jsx";
+import HomePage from "./HomePage.jsx";
+import NotFoundPage from "./NotFoundPage.jsx";
 import AdminGrantRolesPage from "./AdminGrantRolesPage.jsx";
 import DoctorSchedulePage from "./DoctorSchedule/DoctorSchedulePage.jsx";
 

@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from "react";
 import api from "../axios/api.jsx";
+import AppointmentBox from "./AppointmentBox.jsx";
+import {Link} from "react-router-dom";
+import AppointmentForm from "./AppointmentForm.jsx";
 
 const hours = Array.from({ length: 13 }, (_, i) => `${8 + i}:00`);
 
 function DaySchedule({date, day, doctor}) {
     const [appointments, setAppointments] = useState([]);
+    const [selectedAppointment, setSelectedAppointment] = useState(null); // <-- NEW
 
     useEffect(() => {
         const fetchSchedule = async (date, doctor) => {
@@ -37,32 +41,54 @@ function DaySchedule({date, day, doctor}) {
                 <strong>{day.toUpperCase()}</strong>
                 <div>{getDateLabel(date)}</div>
             </div>
-            <div className="time-slots">
-                {hours.map((hourLabel, hourIndex) => (
-                    <div
-                        key={hourLabel}
-                        className="time-slot"
-                        // onClick={() => handleTimeSlotClick(dayIndex, hourIndex + 8)}
-                    >
-                        {hourLabel}
-                    </div>
-                ))}
-                {appointments.map((appointment) => (
-                    <div
+
+            <div className="time-slots-container">
+                <div className="time-slots-lines">
+                    {hours.map((hourLabel) => {
+                        const hour = parseInt(hourLabel);
+                        const top = (hour - 8) * 60;
+                        return (
+                            <div
+                                key={hourLabel}
+                                className="time-line-row"
+                                style={{top: `${top}px`}}
+                            >
+                                <span className="time-label">{hourLabel}</span>
+                                <div className="time-line"/>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {appointments.map((appointment) =>
+                    <AppointmentBox
+                        appointment={appointment}
                         key={appointment.id}
-                        className="appointment-block"
-                        style={{
-                            width: '100%',
-                            top: (appointment.startTime.split("T")[1].split(":")[0] - 8) * 60,
-                            height: (appointment.durationMinutes/60) * 60,
-                            opacity:"50%",
-                        }}
-                    >
-                        {appointment.description}
-                    </div>
-                ))}
+                        onClick={() => setSelectedAppointment(appointment)}
+                    />
+                )}
             </div>
+
+
+            {/* Modal overlay for appointment form */}
+            {selectedAppointment && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <AppointmentForm
+                            appointment={selectedAppointment}
+                            onSave={(updated) => {
+                                console.log("Save", updated);
+                                setSelectedAppointment(null);
+                            }}
+                            onExit={() => setSelectedAppointment(null)}
+                        />
+                    </div>
+                </div>
+            )}
+
+
         </div>
+
     );
 }
 
