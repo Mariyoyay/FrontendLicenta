@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import "./AdminGrantRolesPage.css";
 import api from "./axios/api.jsx";
 
 

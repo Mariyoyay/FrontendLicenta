@@ -1,5 +1,5 @@
 import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
-import './App.css'
+import './App.css';
 import Login from "./AuthenticationPages/Login.jsx";
 import Register from "./AuthenticationPages/Register.jsx";
 import {Provider} from "react-redux";

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "./Schedule.css";
-import DaySchedule from "./DaySchedule.jsx";
+import DaySchedule from "./DaySchedule";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -12,12 +11,19 @@ function getWeekDates(startDate) {
     });
 }
 
-export default function DoctorSchedulePage({doctor}) {
-
-
+export default function DoctorSchedulePage({ doctor }) {
     const [weekStart, setWeekStart] = useState(new Date("2025-05-05"));
-    const [selectedSlot, setSelectedSlot] = useState(null);
-    const [titleInput, setTitleInput] = useState("");
+
+    const [refreshKeys, setRefreshKeys] = useState({});
+
+    const handleRefreshDay = (updatedDate) => {
+        const isoUpdatedDate = updatedDate.toISOString().split("T")[0];
+        getWeekDates(weekStart).forEach((weekDate, dayIndex) => {
+            if (weekDate.toISOString().split('T')[0] === isoUpdatedDate) {
+                setRefreshKeys((prev) => ({ ...prev, [dayIndex]: (prev[dayIndex] || 0) + 1 }));
+            }
+        });
+    };
 
     const handlePrevWeek = () => {
         const prev = new Date(weekStart);
@@ -31,24 +37,6 @@ export default function DoctorSchedulePage({doctor}) {
         setWeekStart(next);
     };
 
-    // const handleTimeSlotClick = (dayIndex, hour) => {
-    //     setSelectedSlot({ day: dayIndex, start: hour });
-    // };
-    //
-    // const handleAddAppointment = () => {
-    //     if (!titleInput || selectedSlot === null) return;
-    //     const newAppt = {
-    //         id: Date.now(),
-    //         title: titleInput,
-    //         day: selectedSlot.day,
-    //         start: selectedSlot.start,
-    //         end: selectedSlot.start + 1,
-    //     };
-    //     setAppointments([...appointments, newAppt]);
-    //     setTitleInput("");
-    //     setSelectedSlot(null);
-    // };
-
     const getDateLabel = (date) => {
         return date.toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -60,33 +48,37 @@ export default function DoctorSchedulePage({doctor}) {
     const weekDates = getWeekDates(weekStart);
 
     return (
-        <div className="schedule-container">
-            <h2>DOCTOR PROGRAM</h2>
-            <div className="week-nav">
-                <button onClick={handlePrevWeek}>&lt;</button>
-                <div className="week-label">
+        <div className="p-4">
+            <h2 className="text-2xl font-bold mb-4">DOCTOR PROGRAM</h2>
+            <div className="flex items-center mb-4">
+                <button
+                    className="bg-gray-200 text-gray-700 rounded-full w-10 h-10 flex items-center justify-center mr-2"
+                    onClick={handlePrevWeek}
+                >
+                    &lt;
+                </button>
+                <div className="flex-1 text-center">
                     WEEK: {getDateLabel(weekDates[0])} - {getDateLabel(weekDates[4])}
                 </div>
-                <button onClick={handleNextWeek}>&gt;</button>
+                <button
+                    className="bg-gray-200 text-gray-700 rounded-full w-10 h-10 flex items-center justify-center ml-2"
+                    onClick={handleNextWeek}
+                >
+                    &gt;
+                </button>
             </div>
 
-            <div className="schedule-grid">
+            <div className="grid grid-cols-5 gap-4">
                 {days.map((day, dayIndex) => (
-                    <DaySchedule date={weekDates[dayIndex]} day={day} key={dayIndex} doctor={doctor} />
+                    <DaySchedule
+                        key={dayIndex + "-refreshValue-" + (refreshKeys[dayIndex] || 0)}
+                        date={weekDates[dayIndex]}
+                        day={day}
+                        doctor={doctor}
+                        onOtherDayEdit={handleRefreshDay}
+                    />
                 ))}
             </div>
-
-            {/*{selectedSlot !== null && (*/}
-            {/*    <div className="appointment-form">*/}
-            {/*        <input*/}
-            {/*            type="text"*/}
-            {/*            placeholder="Title"*/}
-            {/*            value={titleInput}*/}
-            {/*            onChange={(e) => setTitleInput(e.target.value)}*/}
-            {/*        />*/}
-            {/*        <button onClick={handleAddAppointment}>Add Appointment</button>*/}
-            {/*    </div>*/}
-            {/*)}*/}
         </div>
     );
 }

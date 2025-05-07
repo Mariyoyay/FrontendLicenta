@@ -1,5 +1,3 @@
-import './UserDetails.css';
-
 function UserDetails ({user}) {
     if (!user) {
         return (<div className="user-details">No user data is available.</div>);
