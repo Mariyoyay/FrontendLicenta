@@ -4,13 +4,27 @@ function UserDetails ({user}) {
     }
 
     return (
-        <div className="user-details">
-            {/*<h2>User Details</h2>*/}
-            <div className="user-detail-row"><strong>First Name:</strong> {user.firstName}</div>
-            <div className="user-detail-row"><strong>Last Name:</strong> {user.lastName}</div>
-            <div className="user-detail-row"><strong>Email:</strong> {user.email}</div>
-            <div className="user-detail-row"><strong>Phone:</strong> {user.phone}</div>
-            <div className="user-detail-row"><strong>Date of Birth:</strong> {user.dateOfBirth}</div>
+        <div className="space-y-4 text-sm">
+            <div className="flex justify-between">
+                <span className="font-semibold text-gray-600">First Name:</span>
+                <span className="bg-blue-100 text-black px-3 py-1 rounded">{user.firstName}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="font-semibold text-gray-600">Last Name:</span>
+                <span className="bg-blue-100 text-black px-3 py-1 rounded">{user.lastName}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="font-semibold text-gray-600">Email:</span>
+                <span className="bg-blue-100 text-black px-3 py-1 rounded">{user.email}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="font-semibold text-gray-600">Phone:</span>
+                <span className="bg-blue-100 text-black px-3 py-1 rounded">{user.phone}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="font-semibold text-gray-600">Date of Birth:</span>
+                <span className="bg-blue-100 text-black px-3 py-1 rounded">{user.dateOfBirth}</span>
+            </div>
         </div>
     );
 }

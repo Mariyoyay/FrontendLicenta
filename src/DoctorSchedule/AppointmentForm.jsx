@@ -3,10 +3,19 @@ import DatePicker, {registerLocale} from "react-datepicker";
 import enGB from "date-fns/locale/en-GB";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../axios/api.jsx";
+import UserDetailsModal from "./UserDetailsModal.jsx";
+import {Roles as ROle, Roles} from "../Roles.jsx";
+import SelectUserModal from "./SelectUserModal.jsx";
 
 
 const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) => {
     const [appointment, setAppointment] = useState(initialAppointment);
+
+    const [userToView, setUserToView] = useState({email: null, type: null});
+
+    const [userTypeToSelect, setUserTypeToSelect] = useState(null);
+
+
 
     registerLocale("en-GB", enGB);
 
@@ -23,8 +32,26 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
         }
     }
 
+    const handleChangePatientDoctor = (user) => {
+        if (userTypeToSelect === Roles.PATIENT) {
+            setAppointment({ ...appointment, patient: user});
+        } else if (userTypeToSelect === Roles.DOCTOR) {
+            setAppointment({ ...appointment, doctor: user});
+        }
+        setUserTypeToSelect(null);
+    };
+
     return (
-        <div className="bg-white text-black p-6 rounded-xl w-full max-w-4xl shadow-xl space-y-6">
+        <div className="bg-white text-black p-6 rounded-xl w-full max-w-4xl shadow-xl space-y-6 relative">
+
+            <button
+                onClick={onExit}
+                className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl font-bold"
+                aria-label="Close modal"
+            >
+                &times;
+            </button>
+
             <h2 className="text-center text-2xl font-bold text-gray-800">Appointment Details</h2>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -102,31 +129,44 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
                                 <p><strong>Phone:</strong> {appointment.patient.phone}</p>
                             </div>
                             <div className="flex-1 items-center justify-center cursor-pointer">
-                                <button className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details</button>
+                                <button onClick={() => setUserToView({
+                                    email: appointment.patient.email,
+                                    type: Roles.PATIENT
+                                })} className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
+                                </button>
                                 <br/>
-                                <button className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change</button>
+                                <button onClick={() => setUserTypeToSelect(Roles.PATIENT)}
+                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div>
                         <p className="font-semibold mb-1">Doctor:</p>
-                        <div className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
+                        <div
+                            className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
                             <div className="flex-1 items-center justify-center cursor-pointer">
-                                <p><strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}</p>
+                                <p><strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}
+                                </p>
                                 <p><strong>Email:</strong> {appointment.doctor.email}</p>
                                 <p><strong>Phone:</strong> {appointment.doctor.phone}</p>
                             </div>
                             <div className="flex-1 items-center justify-center cursor-pointer">
-                                <button className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details</button>
+                                <button
+                                    onClick={() => setUserToView({email: appointment.doctor.email, type: Roles.DOCTOR})}
+                                    className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
+                                </button>
                                 <br/>
-                                <button className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change</button>
+                                <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
+                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                    <p className="font-semibold mb-1">Last Edited By</p>
+                        <p className="font-semibold mb-1">Last Edited By</p>
                         <div className="bg-blue-400 text-black p-4 rounded-lg space-y-1">
                             <p>
                                 <strong>Name:</strong> {appointment.lastEditUser.firstName} {appointment.lastEditUser.lastName}
@@ -141,18 +181,40 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
             {/* Buttons */}
             <div className="flex justify-end space-x-4 pt-4 border-t mt-4">
                 <button
+                    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                    onClick={() => {
+                    }}
+                >
+                    Cancel Appointment
+                </button>
+                <button
                     className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
-                    onClick={() => {void saveAppointment(); onSave(appointment);}}
+                    onClick={() => {
+                        void saveAppointment();
+                        onSave(appointment);
+                    }}
                 >
                     Save Changes
                 </button>
-                <button
-                    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
-                    onClick={onExit}
-                >
-                    Exit
-                </button>
+                {/*<button*/}
+                {/*    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"*/}
+                {/*    onClick={onExit}*/}
+                {/*>*/}
+                {/*    Exit*/}
+                {/*</button>*/}
+
             </div>
+
+            {userToView.email && (
+                <UserDetailsModal email={userToView.email} onClose={() => setUserToView({email: null, type: null})}
+                                  userType={userToView.type}/>
+            )}
+
+            {userTypeToSelect && (
+                <SelectUserModal roles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
+                                 onClose={() => setUserTypeToSelect(null)}/>
+            )}
+
         </div>
     );
 };

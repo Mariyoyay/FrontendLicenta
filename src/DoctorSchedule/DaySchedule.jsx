@@ -36,7 +36,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
             setSelectedTimeSlot(null);
             setTimeout(() => {
                 onOtherDayEdit?.(new Date(updatedDate));
-            }, 1);
+            }, 10);
         }
     }
 
@@ -80,7 +80,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
                                     setSelectedTimeSlot(timeSlot);
                                 }} />
                             );
-                        } else {
+                        } else if (timeSlot.type === "APPOINTMENT") {
                             return (
                                 <AppointmentBox appointment={timeSlot} key={timeSlot.id} onClick={() => {
                                     setSelectedTimeSlot(timeSlot);

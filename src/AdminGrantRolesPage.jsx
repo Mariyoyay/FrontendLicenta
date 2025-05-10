@@ -14,7 +14,7 @@ const AdminGrantRolesPage = () => {
 
         const fetchUsers = async () => {
             try{
-                const { data } = await api.get("api/users/getUsers");
+                const { data } = await api.get("api/users/get/all");
                 setUsers(data);
             } catch (error) {
                 console.error("Error fetching users: " + error);

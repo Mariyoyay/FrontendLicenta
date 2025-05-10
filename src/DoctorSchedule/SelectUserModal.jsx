@@ -1,0 +1,76 @@
+import React, { useState, useEffect } from "react";
+import api from "../axios/api.jsx"; // Assumes your API client is set up
+
+const SelectUserModal = ({ roles: roles, onSelect, onClose }) => {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            setLoading(true);
+            if (roles && roles.length > 0) {
+                try {
+                    const allUsers = [];
+
+                    for (const role of roles) {
+                        const { data } = await api.get(`api/users/get/by_role/${role.code}`);
+                        allUsers.push(...data);
+                    }
+                    setUsers(allUsers);
+                } catch (error) {
+                    console.error("Error fetching users: " + error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                try {
+                    const { data } = await api.get("api/users/get/all");
+                    setUsers(data);
+                } catch (error) {
+                    console.error("Failed to fetch users", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        void fetchUsers();
+    }, [roles]);
+
+    return (
+        <div className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
+            <div className="bg-white rounded-xl p-6 shadow-2xl w-full max-w-lg relative">
+                <button
+                    onClick={onClose}
+                    className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl font-bold"
+                    aria-label="Close modal"
+                >
+                    &times;
+                </button>
+
+                <h2 className="text-xl font-bold mb-4 text-center">
+                    Select a {(roles && roles.length > 0) ? roles.map(r => r.beautiful).join('/') : 'user'}
+                </h2>
+
+                {loading ? (
+                    <p className="text-center text-gray-500">Loading...</p>
+                ) : (
+                    <ul className="space-y-2 max-h-80 overflow-y-auto">
+                        {users.map((user) => (
+                            <li
+                                key={user.id}
+                                className="bg-blue-100 hover:bg-blue-200 p-3 rounded cursor-pointer"
+                                onClick={() => onSelect(user)}
+                            >
+                                <p className="font-semibold">{user.firstName} {user.lastName}</p>
+                                <p className="text-sm text-gray-600">{user.email}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default SelectUserModal;
