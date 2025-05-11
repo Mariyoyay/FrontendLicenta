@@ -7,7 +7,7 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
 
     // Format time as HH:MM
     const formatTime = (date) => {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     };
 
     const startTime = formatTime(dateTimeStart);
@@ -20,7 +20,7 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
     return (
         <div
             key={occupiedTimeSlot.id}
-            className="absolute w-29 bg-red-600 text-white border-3 border-black rounded px-2 py-1 text-sm"
+            className="absolute w-29 bg-blue-600 text-white border-3 border-black rounded px-2 py-1 text-sm"
             style={{
                 top: `${top}px`,
                 height: `${height}px`,

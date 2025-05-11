@@ -1,5 +1,4 @@
 import React from "react";
-import store from "../redux/store.jsx";
 
 function AppointmentBox({ appointment, onClick: handleClick}) {
     const dateTimeStart = new Date(appointment.startTime);
@@ -7,7 +6,7 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
 
     // Format time as HH:MM
     const formatTime = (date) => {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     };
 
     const startTime = formatTime(dateTimeStart);
@@ -16,6 +15,31 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
     const startHour = dateTimeStart.getHours() + dateTimeStart.getMinutes() / 60;
     const top = (startHour - 8) * 60 + 30;
     const height = (appointment.durationMinutes / 60) * 60;
+
+
+
+
+    if (appointment.isCanceled) return (
+        <div
+            key={appointment.id}
+            className="absolute w-29 bg-red-600 bg-opacity-5 text-white border-3 border-black rounded px-2 py-1 text-sm"
+            style={{
+                top: `${top}px`,
+                height: `${height}px`,
+                backgroundColor: 'rgba(244, 67, 54, 0.5)',
+            }}
+            onClick={() => {
+                handleClick();
+            }}
+        >
+            <div className="h-full flex flex-col items-center justify-center text-center overflow-hidden">
+                <div className="font-semibold w-full">
+                    {`${appointment.patient.firstName} ${appointment.patient.lastName}`}
+                </div>
+            </div>
+        </div>
+    );
+
 
     return (
         <div
@@ -29,7 +53,7 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
                 handleClick();
             }}
         >
-            {/* Start time at top left - smaller and italic */}
+        {/* Start time at top left - smaller and italic */}
             <div className="absolute top-0 left-1 text-[0.5rem] italic">
                 {startTime}
             </div>

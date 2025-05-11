@@ -29,15 +29,25 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
     const handleSave = (updatedTimeSlot) => {
         const updatedDate = new Date(updatedTimeSlot.startTime).toISOString().split("T")[0];
         if (updatedDate === date.toISOString().split("T")[0]) {
-            setTimeSlots((prev) => prev.map((appointment) => appointment.id === updatedTimeSlot.id ? updatedTimeSlot : appointment));
+            setTimeSlots((prev) => prev.map((timeSlot) => (timeSlot.type === updatedTimeSlot.type && timeSlot.id === updatedTimeSlot.id) ? updatedTimeSlot : timeSlot));
             setSelectedTimeSlot(null);
         } else {
-            setTimeSlots((prev) => prev.filter((appointment) => appointment.id !== updatedTimeSlot.id));
+            setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== updatedTimeSlot.type || timeSlot.id !== updatedTimeSlot.id));
             setSelectedTimeSlot(null);
             setTimeout(() => {
                 onOtherDayEdit?.(new Date(updatedDate));
             }, 10);
         }
+    }
+
+    const handleCancel = (canceledAppointmentId) => {
+        setTimeSlots((prev) => prev.map((timeSlot) => (timeSlot.type === "APPOINTMENT" && timeSlot.id === canceledAppointmentId) ? {...timeSlot, isCanceled: true} : timeSlot));
+        setSelectedTimeSlot(null);
+    }
+
+    const handleDelete = (deletedTimeSlot) => {
+        setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== deletedTimeSlot.type || timeSlot.id !== deletedTimeSlot.id));
+        setSelectedTimeSlot(null);
     }
 
     const getDateLabel = (date) =>
@@ -96,6 +106,8 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
                         <AppointmentForm
                             appointment={selectedTimeSlot}
                             onSave={handleSave}
+                            onCancel={handleCancel}
+                            onDelete={handleDelete}
                             onExit={() => setSelectedTimeSlot(null)}
                         />
                 </div>
@@ -106,6 +118,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
                     <OccupiedTimeSlotForm
                         occupiedTimeSlot={selectedTimeSlot}
                         onSave={handleSave}
+                        onDelete={handleDelete}
                         onExit={() => setSelectedTimeSlot(null)}
                     />
                 </div>

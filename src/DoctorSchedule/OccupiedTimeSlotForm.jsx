@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import api from "../axios/api.jsx";
 
 
-const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSave, onExit }) => {
+const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSave, onExit, onDelete }) => {
     const [occupiedTimeSlot, setOccupiedTimeSlot] = useState(initialOccupiedTimeSlot);
 
     registerLocale("en-GB", enGB);
@@ -19,6 +19,15 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
             setOccupiedTimeSlot(updatedAppointment);
         } catch (error) {
             console.error("Error creating appointment", error);
+        }
+    }
+
+    const deleteOccupiedTimeSlot = async () => {
+        try{
+            const {data: deletedTimeSlot} = await api.delete("/api/time_slots/occupied/delete", {data: occupiedTimeSlot});
+            setOccupiedTimeSlot(deletedTimeSlot);
+        } catch (error) {
+            console.error("Error deleting appointment", error);
         }
     }
 
@@ -92,12 +101,15 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
                 >
                     Save Changes
                 </button>
-                {/*<button*/}
-                {/*    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"*/}
-                {/*    onClick={onExit}*/}
-                {/*>*/}
-                {/*    Exit*/}
-                {/*</button>*/}
+                <button
+                    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                    onClick={() => {
+                        void deleteOccupiedTimeSlot();
+                        onDelete(occupiedTimeSlot);
+                    }}
+                >
+                    Delete
+                </button>
             </div>
         </div>
     );

@@ -4,11 +4,12 @@ import enGB from "date-fns/locale/en-GB";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../axios/api.jsx";
 import UserDetailsModal from "./UserDetailsModal.jsx";
-import {Roles as ROle, Roles} from "../Roles.jsx";
+import {Roles} from "../Roles.jsx";
 import SelectUserModal from "./SelectUserModal.jsx";
+import store from "../redux/store.jsx";
 
 
-const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) => {
+const AppointmentForm = ({ appointment: initialAppointment, onSave, onCancel, onDelete, onExit }) => {
     const [appointment, setAppointment] = useState(initialAppointment);
 
     const [userToView, setUserToView] = useState({email: null, type: null});
@@ -31,6 +32,38 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
             console.error("Error creating appointment", error);
         }
     }
+
+    const cancelAppointment = async () => {
+        try {
+            const {data: canceledAppointment} = await api.post("/api/time_slots/appointment/cancel", appointment);
+            setAppointment(canceledAppointment);
+        } catch (error) {
+            console.error("Error canceling appointment", error);
+        }
+    }
+
+    const rescheduleAppointment = async () => {
+        try {
+            const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
+                ...appointment,
+                isCanceled: false,
+                doctorID: appointment.doctor.id,
+                patientID: appointment.patient.id,
+            });
+            setAppointment(updatedAppointment);
+        } catch (error) {
+            console.error("Error rescheduling appointment", error);
+        }
+    }
+
+    const deleteAppointment = async () => {
+        try {
+            const {data: deletedAppointment} = await api.delete("/api/time_slots/appointment/manage/delete", {data: appointment});
+            setAppointment(deletedAppointment);
+        } catch (error) {
+            console.error("Error deleting appointment", error);
+        }
+    };
 
     const handleChangePatientDoctor = (user) => {
         if (userTypeToSelect === Roles.PATIENT) {
@@ -86,18 +119,14 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
                                className="bg-blue-100 text-black px-3 py-1 rounded"/>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <label className="font-medium">Is Canceled</label>
-                        <div
-                            className={`w-8 h-8 rounded flex items-center justify-center cursor-pointer ${
-                                appointment.isCanceled ? "bg-red-500 text-white" : "bg-yellow-400"
-                            }`}
-                            onClick={() => setAppointment({...appointment, isCanceled: !appointment.isCanceled})}
-                            title="Toggle canceled status"
-                        >
-                            {appointment.isCanceled ? "Yes" : "No"}
+                    {appointment.isCanceled ? (
+                        <div className="flex items-center justify-center">
+                            <div className="w-full h-8 rounded flex items-center justify-center bg-red-500 text-white">
+                                CANCELED
+                            </div>
                         </div>
-                    </div>
+                    ) : <></>}
+
 
                     <div className="flex items-center justify-between">
                         <label className="font-medium">Last Edit Time</label>
@@ -180,22 +209,51 @@ const AppointmentForm = ({ appointment: initialAppointment, onSave, onExit }) =>
 
             {/* Buttons */}
             <div className="flex justify-end space-x-4 pt-4 border-t mt-4">
-                <button
-                    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
-                    onClick={() => {
-                    }}
-                >
-                    Cancel Appointment
-                </button>
-                <button
-                    className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
-                    onClick={() => {
-                        void saveAppointment();
-                        onSave(appointment);
-                    }}
-                >
-                    Save Changes
-                </button>
+                {store.getState().auth.username === appointment.doctor.email ? (
+                    <button
+                        className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                        onClick={() => {
+                            void deleteAppointment();
+                            onDelete(appointment);
+                        }}
+                    >
+                        Delete
+                    </button>
+                ) : <></>}
+                {!appointment.isCanceled ? (
+                    <>
+                        <button
+                            className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                            onClick={() => {
+                                void cancelAppointment();
+                                onCancel(appointment.id);
+                            }}
+                        >
+                            Cancel Appointment
+                        </button>
+                        <button
+                            className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
+                            onClick={() => {
+                                void saveAppointment();
+                                onSave(appointment);
+                            }}
+                        >
+                            Save Changes
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        className="bg-green-600 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                        onClick={() => {
+                            void rescheduleAppointment();
+                            onSave({...appointment, isCanceled: false});
+                        }}
+                    >
+                        Reschedule Appointment
+                    </button>
+                )}
+
+
                 {/*<button*/}
                 {/*    className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"*/}
                 {/*    onClick={onExit}*/}
