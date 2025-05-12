@@ -16,7 +16,7 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
                 ...occupiedTimeSlot,
                 doctorID: occupiedTimeSlot.doctor.id,
             });
-            setOccupiedTimeSlot(updatedAppointment);
+            onSave(updatedAppointment);
         } catch (error) {
             console.error("Error creating appointment", error);
         }
@@ -25,7 +25,7 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
     const deleteOccupiedTimeSlot = async () => {
         try{
             const {data: deletedTimeSlot} = await api.delete("/api/time_slots/occupied/delete", {data: occupiedTimeSlot});
-            setOccupiedTimeSlot(deletedTimeSlot);
+            onDelete(deletedTimeSlot);
         } catch (error) {
             console.error("Error deleting appointment", error);
         }
@@ -96,7 +96,6 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
                     className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
                     onClick={() => {
                         void saveOccupiedTimeSlot();
-                        onSave(occupiedTimeSlot);
                     }}
                 >
                     Save Changes
@@ -105,7 +104,6 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
                     className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
                     onClick={() => {
                         void deleteOccupiedTimeSlot();
-                        onDelete(occupiedTimeSlot);
                     }}
                 >
                     Delete
