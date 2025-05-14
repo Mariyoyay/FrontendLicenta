@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import './App.css';
 import Login from "./AuthenticationPages/Login.jsx";
 import Register from "./AuthenticationPages/Register.jsx";
@@ -11,12 +11,12 @@ import MyDetails from "./MyDetails.jsx";
 import HomePage from "./HomePage.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
 import AdminGrantRolesPage from "./AdminGrantRolesPage.jsx";
-import DoctorSchedulePage from "./DoctorSchedule/DoctorSchedulePage.jsx";
+import OfficeSchedulePage from "./DoctorSchedule/OfficeSchedulePage.jsx";
 
 function App() {
   return (
       <Provider store={store}>
-        <Router>
+        <BrowserRouter>
           <Routes>
               {/*Authentication Pages*/}
               <Route path="/register" element={<Register />} />
@@ -32,12 +32,12 @@ function App() {
 
               <Route path="/admin" element={<ProtectedRoute permissions={["ROLE_ADMIN"]} element={<AdminGrantRolesPage />} />} />
 
-              <Route path="/doctor" element={<ProtectedRoute permissions={["ROLE_EMPLOYEE", "ROLE_DOCTOR"]} element={<DoctorSchedulePage doctor={"mama@test.com"} />} />} />
+              <Route path="/office/:id" element={<ProtectedRoute permissions={["ROLE_EMPLOYEE", "ROLE_DOCTOR"]} element={<OfficeSchedulePage />} />} />
 
               {/*No Page Found*/}
               <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </Router>
+        </BrowserRouter>
       </Provider>
   );
 }

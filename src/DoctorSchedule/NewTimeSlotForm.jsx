@@ -6,13 +6,16 @@ import SelectUserModal from "./SelectUserModal.jsx";
 import React, {useState} from "react";
 import enGB from "date-fns/locale/en-GB";
 import api from "../axios/api.jsx";
+import SelectOfficeModal from "./SelectOfficeModal.jsx";
 
-function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
+function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
     const [timeSlot, setTimeSlot] = useState({...modelTimeSlot, type: "APPOINTMENT"});
 
     const [userToView, setUserToView] = useState({email: null, type: null});
 
     const [userTypeToSelect, setUserTypeToSelect] = useState(null);
+
+    const [enableSelectOffice, setEnableSelectOffice] = useState(false);
 
     registerLocale("en-GB", enGB);
 
@@ -20,6 +23,7 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
         try {
             const {data: newAppointment} = await api.post("/api/time_slots/appointment/manage/add", {
                 ...timeSlot,
+                officeID: timeSlot.office.id,
                 doctorID: timeSlot.doctor.id,
                 patientID: timeSlot.patient.id,
             });
@@ -31,10 +35,7 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
 
     const createOccupiedTimeSlot = async () => {
         try {
-            const {data: newOccupiedTimeSlot} = await api.post("/api/time_slots/occupied/add", {
-                ...timeSlot,
-                doctorID: timeSlot.doctor.id,
-            });
+            const {data: newOccupiedTimeSlot} = await api.post("/api/time_slots/occupied/add", timeSlot);
             onSubmit(newOccupiedTimeSlot);
         } catch (error) {
             console.error("Error creating timeSlot", error);
@@ -63,7 +64,7 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
 
             <h2 className="text-center text-2xl font-bold text-gray-800">New {timeSlot.type === "APPOINTMENT" ? "Appointment" : "Occupied Time Slot"}</h2>
 
-            {store.getState().auth.username === timeSlot.doctor.email ? (
+            {timeSlot.office?.doctors?.map((d) => {return d.email;}).includes(store.getState().auth.username) ? (
                 <div className="flex items-center justify-between w-full p-2 pb-4 border-b mb-4">
                     <span className="font-medium">Type:</span>
                     <div className="flex space-x-2">
@@ -124,7 +125,7 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
                         <textarea
                             className="w-full h-65 bg-blue-100 text-black p-2 rounded resize-none"
                             value={timeSlot.description || ''}
-                            placeholder="eg. Control Otro..."
+                            placeholder={timeSlot.type === "APPOINTMENT" ? "eg. Control Otro... " : "eg. Congres, Concediu, ..."}
                             onChange={(e) => setTimeSlot({...timeSlot, description: e.target.value})}
                         />
                     </div>
@@ -134,13 +135,76 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
                 {timeSlot.type === "APPOINTMENT" ? (
                     <div className="space-y-4">
                         <div>
+                            <p className="font-semibold mb-1">Office:</p>
+                            <div
+                                className="bg-blue-400 text-black p-4 rounded-lg space-y-1 flex items-center justify-center cursor-pointer">
+                                {timeSlot.office ? (
+                                    <>
+                                        <div className="flex-1 items-center justify-center cursor-pointer">
+                                            <p>
+                                                <strong>ID:</strong> {timeSlot.office.id}
+                                            </p>
+                                            <p><strong>Name:</strong> {timeSlot.office.name}</p>
+                                            {timeSlot.office.description ? (
+                                                <p><strong>Description:</strong> {timeSlot.office.description}</p>
+                                            ) : <></>}
+                                        </div>
+                                        <div className="flex-1 items-center justify-center cursor-pointer">
+                                            <button onClick={() => setEnableSelectOffice(true)}
+                                                    className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <button onClick={() => setEnableSelectOffice(true)}
+                                            className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Choose Office
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <div>
+                            <p className="font-semibold mb-1">Doctor:</p>
+                            <div
+                                className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
+                                {timeSlot.doctor ? (
+                                    <>
+                                        <div className="flex-1 items-center justify-center cursor-pointer">
+                                            <p>
+                                                <strong>Name:</strong> {timeSlot.doctor.firstName} {timeSlot.doctor.lastName}
+                                            </p>
+                                            <p><strong>Email:</strong> {timeSlot.doctor.email}</p>
+                                            <p><strong>Phone:</strong> {timeSlot.doctor.phone}</p>
+                                        </div>
+                                        <div className="flex-1 items-center justify-center cursor-pointer">
+                                            <button
+                                                onClick={() => setUserToView({
+                                                    email: timeSlot.doctor.email,
+                                                    type: Roles.DOCTOR
+                                                })}
+                                                className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
+                                            </button>
+                                            <br/>
+                                            <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
+                                                    className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
+                                            className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Choose Doctor
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <div>
                             <p className="font-semibold mb-1">Patient:</p>
                             <div
                                 className="bg-blue-400 text-black p-4 rounded-lg space-y-1 flex items-center justify-center cursor-pointer">
                                 {timeSlot.patient ? (
                                     <>
                                         <div className="flex-1 items-center justify-center cursor-pointer">
-                                            <p><strong>Name:</strong> {timeSlot.patient.firstName} {timeSlot.patient.lastName}
+                                            <p>
+                                                <strong>Name:</strong> {timeSlot.patient.firstName} {timeSlot.patient.lastName}
                                             </p>
                                             <p><strong>Email:</strong> {timeSlot.patient.email}</p>
                                             <p><strong>Phone:</strong> {timeSlot.patient.phone}</p>
@@ -164,29 +228,7 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
                                 )}
                             </div>
                         </div>
-                        <div>
-                            <p className="font-semibold mb-1">Doctor:</p>
-                            <div
-                                className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
-                                <div className="flex-1 items-center justify-center cursor-pointer">
-                                    <p><strong>Name:</strong> {timeSlot.doctor.firstName} {timeSlot.doctor.lastName}
-                                    </p>
-                                    <p><strong>Email:</strong> {timeSlot.doctor.email}</p>
-                                    <p><strong>Phone:</strong> {timeSlot.doctor.phone}</p>
-                                </div>
-                                <div className="flex-1 items-center justify-center cursor-pointer">
-                                    <button
-                                        onClick={() => setUserToView({email: timeSlot.doctor.email, type: Roles.DOCTOR})}
-                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
-                                    </button>
-                                    <br/>
-                                    <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
-                                            className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                </div>
+                    </div>
                 ) : <></>}
             </div>
 
@@ -203,14 +245,27 @@ function NewTimeSlotForm({ modelTimeSlot,   onSubmit, onExit }) {
                 </button>
             </div>
 
+            {enableSelectOffice && (
+                <SelectOfficeModal onSelect={(selectedOffice) => {
+                    setTimeSlot({...timeSlot, office: selectedOffice, doctor: null});
+                    setEnableSelectOffice(false);}
+                } onClose={() => setEnableSelectOffice(false)} />
+            )}
+
             {userToView.email && (
                 <UserDetailsModal email={userToView.email} onClose={() => setUserToView({email: null, type: null})}
                                   userType={userToView.type}/>
             )}
 
-            {userTypeToSelect && (
-                <SelectUserModal roles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
+            {userTypeToSelect && userTypeToSelect === Roles.PATIENT && (
+                <SelectUserModal byRoles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
                                  onClose={() => setUserTypeToSelect(null)}/>
+            )}
+
+            {userTypeToSelect && userTypeToSelect === Roles.DOCTOR && (
+                <SelectUserModal //byRoles={[userTypeToSelect]}
+                    fromList={timeSlot.office?.doctors} onSelect={handleChangePatientDoctor}
+                    onClose={() => setUserTypeToSelect(null)}/>
             )}
 
         </div>

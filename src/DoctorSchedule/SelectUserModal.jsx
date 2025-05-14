@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import api from "../axios/api.jsx"; // Assumes your API client is set up
+import api from "../axios/api.jsx";
+import {Roles} from "../Roles.jsx"; // Assumes your API client is set up
 
-const SelectUserModal = ({ roles: roles, onSelect, onClose }) => {
+const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onClose }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,26 +17,25 @@ const SelectUserModal = ({ roles: roles, onSelect, onClose }) => {
                         const { data } = await api.get(`api/users/get/by_role/${role.code}`);
                         allUsers.push(...data);
                     }
-                    setUsers(allUsers);
+                    setUsers(allUsers);//.filter(filterCondition ? (user) => filterCondition(user) : () => {return true;}));
                 } catch (error) {
                     console.error("Error fetching users: " + error);
-                } finally {
-                    setLoading(false);
                 }
             } else {
                 try {
                     const { data } = await api.get("api/users/get/all");
-                    setUsers(data);
+                    setUsers(data);//.filter(filterCondition ? (user) => filterCondition(user) : () => {return true;}));
                 } catch (error) {
                     console.error("Failed to fetch users", error);
-                } finally {
-                    setLoading(false);
                 }
             }
         };
 
-        void fetchUsers();
-    }, [roles]);
+        if(!givenUsers) void fetchUsers();
+        else setUsers(givenUsers);
+        
+        setLoading(false);
+    }, [givenUsers, roles]);
 
     return (
         <div className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
@@ -49,7 +49,11 @@ const SelectUserModal = ({ roles: roles, onSelect, onClose }) => {
                 </button>
 
                 <h2 className="text-xl font-bold mb-4 text-center">
-                    Select a {(roles && roles.length > 0) ? roles.map(r => r.beautiful).join('/') : 'user'}
+                    {(roles && roles.length > 0) ?
+                        `Select ${roles[0] === Roles.ADMIN || roles[0] === Roles.EMPLOYEE ? "an" : "a"} ${roles.map(r => r.beautiful).join('/')}`
+                        :
+                        "Select a User"
+                    }
                 </h2>
 
                 {loading ? (

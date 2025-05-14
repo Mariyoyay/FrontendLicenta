@@ -16,17 +16,18 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
     const top = (startHour - 8) * 60 + 30;
     const height = (appointment.durationMinutes / 60) * 60;
 
-
+    const color = appointment.doctor.color;
 
 
     if (appointment.isCanceled) return (
         <div
             key={appointment.id}
-            className="absolute w-29 bg-red-600 bg-opacity-5 text-white border-3 border-black rounded px-2 py-1 text-sm"
+            className="absolute w-31 text-white border-3 border-black rounded px-2 py-1 text-sm"
             style={{
                 top: `${top}px`,
                 height: `${height}px`,
-                backgroundColor: 'rgba(244, 67, 54, 0.5)',
+                backgroundColor: color,
+                opacity: '0.5',
             }}
             onClick={() => {
                 handleClick();
@@ -44,10 +45,11 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
     return (
         <div
             key={appointment.id}
-            className="absolute w-29 bg-green-600 text-white border-3 border-black rounded px-2 py-1 text-sm"
+            className="absolute w-29 z-10 text-white border-3 border-black rounded px-2 py-1 text-sm"
             style={{
                 top: `${top}px`,
                 height: `${height}px`,
+                backgroundColor: color,
             }}
             onClick={() => {
                 handleClick();
@@ -59,7 +61,7 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
             </div>
 
             <div className="h-full flex flex-col items-center justify-center text-center overflow-hidden">
-                <div className="font-semibold w-full">
+                <div className="font-semibold w-full ">
                     {`${appointment.patient.firstName} ${appointment.patient.lastName}`}
                 </div>
                 <div className="text-[0.6rem] italic truncate w-full">

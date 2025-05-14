@@ -8,7 +8,7 @@ import NewTimeSlotForm from "./NewTimeSlotForm.jsx";
 
 const hours = Array.from({ length: 13 }, (_, i) => `${8 + i}:00`);
 
-function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
+function DaySchedule({ date, day, office, onOtherDayHasChanged, hideCanceled, showOccupied}) {
     const [timeSlots, setTimeSlots] = useState([]);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
@@ -16,7 +16,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
         const fetchSchedule = async () => {
             try {
                 const isoDate = date.toISOString().split("T")[0];
-                const { data } = await api.get(`/api/time_slots/day_schedule/${doctor}`, {
+                const { data } = await api.get(`/api/time_slots/day_schedule/office/${office.id}`, {
                     params: { date: isoDate },
                 });
                 setTimeSlots(data);
@@ -25,7 +25,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
             }
         };
         void fetchSchedule();
-    }, [date, doctor]);
+    }, [date, office]);
 
     const handleTryAdd = (hour) => {
         const isoDate = date.toISOString().split("T")[0];
@@ -34,7 +34,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
         const paddedMin = m.padStart(2, "0");
         const isoDateTime = `${isoDate}T${paddedHour}:${paddedMin}:00`;
 
-        setSelectedTimeSlot({type: "NEW", startTime: isoDateTime, doctor: {email: doctor}});
+        setSelectedTimeSlot({type: "NEW", startTime: isoDateTime, office: office });
     };
 
     const handleAdd = (newTimeSlot) => {
@@ -44,7 +44,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
 
     const handleSave = (updatedTimeSlot) => {
         const updatedDate = new Date(updatedTimeSlot.startTime).toISOString().split("T")[0];
-        if (updatedTimeSlot.doctor.email !== doctor) {
+        if (updatedTimeSlot.type === "APPOINTMENT" && updatedTimeSlot.office.id !== office.id) {
             setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== updatedTimeSlot.type || timeSlot.id !== updatedTimeSlot.id));
             setSelectedTimeSlot(null);
         } else if (updatedDate === date.toISOString().split("T")[0]) {
@@ -54,7 +54,7 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
             setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== updatedTimeSlot.type || timeSlot.id !== updatedTimeSlot.id));
             setSelectedTimeSlot(null);
             setTimeout(() => {
-                onOtherDayEdit?.(new Date(updatedDate));
+                onOtherDayHasChanged?.(new Date(updatedDate));
             }, 10);
         }
     };
@@ -78,11 +78,11 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
 
 
     return (
-        <div className="flex flex-col items-center">
+        <div className="w-full flex flex-col items-center">
             <h3 className="text-xl font-bold">{day.toUpperCase()}</h3>
             <p className="mb-4">{getDateLabel(date)}</p>
 
-            <div className="relative bg-yellow-100 border-2 border-red-600 rounded-2xl p-4 w-48 h-[815px]">
+            <div className="relative bg-yellow-100 border-2 border-red-600 rounded-2xl p-4 w-50 h-[815px]">
                 {/* Time labels on left */}
                 <div className="absolute left-0 top-0 w-full h-full">
                     <div className="h-[30px] bg-yellow-100 w-full rounded-3xl"></div>
@@ -112,13 +112,13 @@ function DaySchedule({ date, day, doctor, onOtherDayEdit}) {
 
                 <div className="relative flex-1 top-0 left-12 items-center">
                     {timeSlots.map((timeSlot) => {
-                        if (timeSlot.type === "OCCUPIED") {
+                        if (timeSlot.type === "OCCUPIED" && showOccupied) {
                             return (
                                 <OccupiedTimeSlotBox occupiedTimeSlot={timeSlot} key={timeSlot.type + '-' + timeSlot.id} onClick={() => {
                                     setSelectedTimeSlot(timeSlot);
                                 }} />
                             );
-                        } else if (timeSlot.type === "APPOINTMENT") {
+                        } else if (timeSlot.type === "APPOINTMENT" && (!hideCanceled || !timeSlot.isCanceled)) {
                             return (
                                 <AppointmentBox appointment={timeSlot} key={timeSlot.type + '-' + timeSlot.id} onClick={() => {
                                     setSelectedTimeSlot(timeSlot);

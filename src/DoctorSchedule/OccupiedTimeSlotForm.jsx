@@ -12,11 +12,8 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
 
     const saveOccupiedTimeSlot = async () => {
         try {
-            const {data: updatedAppointment} = await api.post("/api/time_slots/occupied/update", {
-                ...occupiedTimeSlot,
-                doctorID: occupiedTimeSlot.doctor.id,
-            });
-            onSave(updatedAppointment);
+            const {data: updatedOccupiedTimeSlot} = await api.post("/api/time_slots/occupied/update", occupiedTimeSlot);
+            onSave(updatedOccupiedTimeSlot);
         } catch (error) {
             console.error("Error creating appointment", error);
         }
@@ -64,17 +61,13 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
 
                     <div className="flex items-center justify-between">
                         <label className="font-medium">Duration (min)</label>
-                        <input value={occupiedTimeSlot.durationMinutes}
+                        <input value={occupiedTimeSlot.durationMinutes || ''}
                                type="number"
                                min="0"
                                placeholder="eg. 120"
                                onChange={(e) => setOccupiedTimeSlot({
                                    ...occupiedTimeSlot,
                                    durationMinutes: e.target.value
-                               })}
-                               onBlur={(e) => setOccupiedTimeSlot({
-                                   ...occupiedTimeSlot,
-                                   durationMinutes: parseInt(e.target.value) || 0
                                })}
                                className="bg-blue-100 text-black px-3 py-1 rounded"/>
                     </div>
@@ -83,7 +76,8 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
                         <label className="font-semibold block mb-1">Description</label>
                         <textarea
                             className="w-full h-65 bg-blue-100 text-black p-2 rounded resize-none"
-                            value={occupiedTimeSlot.description}
+                            value={occupiedTimeSlot.description || ''}
+                            placeholder="e.g. Occupied"
                             onChange={(e) => setOccupiedTimeSlot({...occupiedTimeSlot, description: e.target.value})}
                         />
                     </div>
@@ -91,7 +85,7 @@ const OccupiedTimeSlotForm = ({ occupiedTimeSlot: initialOccupiedTimeSlot, onSav
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end space-x-4 pt-4 border-t mt-4">
+            <div className="flex flex-row-reverse justify-between space-x-4 pt-4 border-t mt-4">
                 <button
                     className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
                     onClick={() => {

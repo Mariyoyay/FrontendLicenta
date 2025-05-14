@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import {useState} from "react";
 import DatePicker, {registerLocale} from "react-datepicker";
 import enGB from "date-fns/locale/en-GB";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,6 +7,7 @@ import UserDetailsModal from "./UserDetailsModal.jsx";
 import {Roles} from "../Roles.jsx";
 import SelectUserModal from "./SelectUserModal.jsx";
 import store from "../redux/store.jsx";
+import SelectOfficeModal from "./SelectOfficeModal.jsx";
 
 
 const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCancel, onDelete, onExit }) => {
@@ -16,12 +17,15 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
 
     const [userTypeToSelect, setUserTypeToSelect] = useState(null);
 
+    const [enableOfficeSelect, setEnableOfficeSelect] = useState(false);
+
     registerLocale("en-GB", enGB);
 
     const saveAppointment = async () => {
         try {
             const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
                 ...appointment,
+                officeID: appointment.office.id,
                 doctorID: appointment.doctor.id,
                 patientID: appointment.patient.id,
             });
@@ -45,6 +49,7 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
             const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
                 ...appointment,
                 isCanceled: false,
+                officeID: appointment.office.id,
                 doctorID: appointment.doctor.id,
                 patientID: appointment.patient.id,
             });
@@ -74,7 +79,6 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
 
     return (
         <div className="bg-white text-black p-6 rounded-xl w-full max-w-4xl shadow-xl space-y-6 relative">
-
             <button
                 onClick={onExit}
                 className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl font-bold"
@@ -121,14 +125,6 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                         </div>
                     ) : <></>}
 
-
-                    <div className="flex items-center justify-between">
-                        <label className="font-medium">Last Edit Time</label>
-                        <p className="bg-blue-400 text-black px-3 py-1 rounded">
-                            {new Date(appointment.lastEditTime).toLocaleString("ro-MD")}
-                        </p>
-                    </div>
-
                     <div>
                         <label className="font-semibold block mb-1">Description</label>
                         <textarea
@@ -138,10 +134,82 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                             onChange={(e) => setAppointment({...appointment, description: e.target.value})}
                         />
                     </div>
+
+                    <div>
+                        <p className="font-semibold mb-1">Last Edited by:</p>
+                        <div
+                            className="bg-blue-400 text-black p-4 rounded-lg space-y-1 flex items-center justify-center cursor-pointer">
+                            <div className="flex-1 items-center justify-center cursor-pointer">
+                                <p><strong>Name:</strong> {appointment.lastEditUser.firstName} {appointment.lastEditUser.lastName}
+                                </p>
+                                <p><strong>Email:</strong> {appointment.lastEditUser.email}</p>
+                                <p><strong>Phone:</strong> {appointment.lastEditUser.phone}</p>
+                            </div>
+                            <div className="flex-1 items-center justify-center cursor-pointer">
+                                <p className="bg-yellow-300 text-black px-3 py-1 rounded m-1">
+                                    At: {new Date(appointment.lastEditTime).toLocaleString("ro-MD")}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="space-y-4">
+
+                    <div>
+                        <p className="font-semibold mb-1">Office:</p>
+                        <div
+                            className="bg-blue-400 text-black p-4 rounded-lg space-y-1 flex items-center justify-center cursor-pointer">
+                            <div className="flex-1 items-center justify-center cursor-pointer">
+                                <p><strong>ID:</strong> {appointment.office.id}</p>
+                                <p><strong>Name:</strong> {appointment.office.name}</p>
+                                {appointment.office.description ? (
+                                    <p><strong>Description:</strong> {appointment.office.description}</p>
+                                ) : <></>}
+                            </div>
+                            <div className="flex-1 items-center justify-center cursor-pointer">
+                                <button onClick={() => setEnableOfficeSelect(true)}
+                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p className="font-semibold mb-1">Doctor:</p>
+                        <div
+                            className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
+                            {appointment.doctor ? (
+                                <>
+                                    <div className="flex-1 items-center justify-center cursor-pointer">
+                                        <p><strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}
+                                        </p>
+                                        <p><strong>Email:</strong> {appointment.doctor.email}</p>
+                                        <p><strong>Phone:</strong> {appointment.doctor.phone}</p>
+                                    </div>
+                                    <div className="flex-1 items-center justify-center cursor-pointer">
+                                        <button
+                                            onClick={() => setUserToView({
+                                                email: appointment.doctor.email,
+                                                type: Roles.DOCTOR
+                                            })}
+                                            className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
+                                        </button>
+                                        <br/>
+                                        <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
+                                                className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
+                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Choose Doctor
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
                     <div>
                         <p className="font-semibold mb-1">Patient:</p>
                         <div
@@ -166,64 +234,15 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                         </div>
                     </div>
 
-                    <div>
-                        <p className="font-semibold mb-1">Doctor:</p>
-                        <div
-                            className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
-                            <div className="flex-1 items-center justify-center cursor-pointer">
-                                <p><strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}
-                                </p>
-                                <p><strong>Email:</strong> {appointment.doctor.email}</p>
-                                <p><strong>Phone:</strong> {appointment.doctor.phone}</p>
-                            </div>
-                            <div className="flex-1 items-center justify-center cursor-pointer">
-                                <button
-                                    onClick={() => setUserToView({email: appointment.doctor.email, type: Roles.DOCTOR})}
-                                    className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
-                                </button>
-                                <br/>
-                                <button onClick={() => setUserTypeToSelect(Roles.DOCTOR)}
-                                        className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Change
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div>
-                        <p className="font-semibold mb-1">Last Edited By</p>
-                        <div className="bg-blue-400 text-black p-4 rounded-lg space-y-1">
-                            <p>
-                                <strong>Name:</strong> {appointment.lastEditUser.firstName} {appointment.lastEditUser.lastName}
-                            </p>
-                            <p><strong>Email:</strong> {appointment.lastEditUser.email}</p>
-                            <p><strong>Phone:</strong> {appointment.lastEditUser.phone}</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end space-x-4 pt-4 border-t mt-4">
-                {store.getState().auth.username === appointment.doctor.email ? (
-                    <button
-                        className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
-                        onClick={() => {
-                            void deleteAppointment();
-                        }}
-                    >
-                        Delete
-                    </button>
-                ) : <></>}
+            <div className="flex flex-row-reverse justify-between space-x-4 pt-4 border-t mt-4">
+
                 {!appointment.isCanceled ? (
                     <>
-                        <button
-                            className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
-                            onClick={() => {
-                                void cancelAppointment();
-                            }}
-                        >
-                            Cancel Appointment
-                        </button>
                         <button
                             className="bg-green-600 text-black px-5 py-2 rounded hover:bg-green-700 font-semibold"
                             onClick={() => {
@@ -231,6 +250,14 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                             }}
                         >
                             Save Changes
+                        </button>
+                        <button
+                            className="bg-orange-400 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                            onClick={() => {
+                                void cancelAppointment();
+                            }}
+                        >
+                            Cancel Appointment
                         </button>
                     </>
                 ) : (
@@ -243,18 +270,39 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                         Reschedule Appointment
                     </button>
                 )}
+                {store.getState().auth.username === initialAppointment.doctor.email ? (
+                    <button
+                        className="bg-red-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                        onClick={() => {
+                            void deleteAppointment();
+                        }}
+                    >
+                        Delete
+                    </button>
+                ) : <></>}
             </div>
+
+            {enableOfficeSelect && (
+                <SelectOfficeModal onSelect={(selectedOffice) => {
+                    setAppointment({...appointment, office: selectedOffice, doctor: null});
+                    setEnableOfficeSelect(false);
+                }} onClose={() => setEnableOfficeSelect(false)}/>
+            )}
 
             {userToView.email && (
                 <UserDetailsModal email={userToView.email} onClose={() => setUserToView({email: null, type: null})}
                                   userType={userToView.type}/>
             )}
 
-            {userTypeToSelect && (
-                <SelectUserModal roles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
+            {userTypeToSelect && userTypeToSelect === Roles.PATIENT && (
+                <SelectUserModal byRoles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
                                  onClose={() => setUserTypeToSelect(null)}/>
             )}
 
+            {userTypeToSelect && userTypeToSelect === Roles.DOCTOR && (
+                <SelectUserModal byRoles={[userTypeToSelect]} fromList={appointment.office.doctors} onSelect={handleChangePatientDoctor}
+                                 onClose={() => setUserTypeToSelect(null)}/>
+            )}
         </div>
     );
 };

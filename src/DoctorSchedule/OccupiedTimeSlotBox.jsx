@@ -2,6 +2,9 @@ import React from "react";
 import store from "../redux/store.jsx";
 
 function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
+
+    const isOTSDoctorViewing = occupiedTimeSlot.doctor.email === store.getState().auth.username;
+
     const dateTimeStart = new Date(occupiedTimeSlot.startTime);
     const dateTimeEnd = new Date(dateTimeStart.getTime() + occupiedTimeSlot.durationMinutes * 60000);
 
@@ -20,13 +23,16 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
     return (
         <div
             key={occupiedTimeSlot.id}
-            className="absolute w-29 bg-blue-600 text-white border-3 border-black rounded px-2 py-1 text-sm"
+            className="absolute w-31 bg-black text-white border-l-20 rounded px-2 py-1 text-sm"
             style={{
                 top: `${top}px`,
                 height: `${height}px`,
+                borderColor: occupiedTimeSlot.doctor.color,
+                opacity: `${isOTSDoctorViewing ? "1" : "0.4" }`,
+                zIndex: `${isOTSDoctorViewing ? "1" : "2" }`
             }}
             onClick={() => {
-                if (occupiedTimeSlot.doctor.email === store.getState().auth.username) handleClick();
+                if (isOTSDoctorViewing) handleClick();
             }}
         >
             {/* Start time at top left - smaller and italic */}
@@ -35,8 +41,10 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
             </div>
 
             {/* Description centered */}
-            <div className="h-full flex items-center justify-center">
-                {occupiedTimeSlot.description}
+            <div className="h-full flex flex-col items-center justify-center text-center overflow-hidden">
+                <div className="font-semibold italic truncate w-full">
+                    {occupiedTimeSlot.description}
+                </div>
             </div>
 
             {/* End time at bottom left - smaller and italic */}
