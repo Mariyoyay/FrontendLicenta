@@ -8,7 +8,7 @@ import NewTimeSlotForm from "./NewTimeSlotForm.jsx";
 
 const hours = Array.from({ length: 13 }, (_, i) => `${8 + i}:00`);
 
-function DaySchedule({ date, day, office, onOtherDayHasChanged, hideCanceled, showOccupied}) {
+function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hideCanceled, showOccupied}) {
     const [timeSlots, setTimeSlots] = useState([]);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
@@ -38,7 +38,16 @@ function DaySchedule({ date, day, office, onOtherDayHasChanged, hideCanceled, sh
     };
 
     const handleAdd = (newTimeSlot) => {
-        setTimeSlots([...timeSlots, newTimeSlot]);
+        if (newTimeSlot.type === "OCCUPIED" || newTimeSlot.office.id === office.id) {
+            const newTimeSlotDate = new Date(newTimeSlot.startTime).toISOString().split("T")[0];
+            if (newTimeSlotDate === date.toISOString().split("T")[0]) {
+                setTimeSlots([...timeSlots, newTimeSlot]);
+            } else {
+                setTimeout(() => {
+                    notifyOtherDay?.(new Date(newTimeSlotDate));
+                });
+            }
+        }
         setSelectedTimeSlot(null);
     }
 
@@ -54,7 +63,7 @@ function DaySchedule({ date, day, office, onOtherDayHasChanged, hideCanceled, sh
             setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== updatedTimeSlot.type || timeSlot.id !== updatedTimeSlot.id));
             setSelectedTimeSlot(null);
             setTimeout(() => {
-                onOtherDayHasChanged?.(new Date(updatedDate));
+                notifyOtherDay?.(new Date(updatedDate));
             }, 10);
         }
     };

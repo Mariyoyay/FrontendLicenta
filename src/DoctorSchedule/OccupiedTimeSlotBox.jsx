@@ -23,7 +23,7 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
     return (
         <div
             key={occupiedTimeSlot.id}
-            className="absolute w-31 bg-black text-white border-l-20 rounded px-2 py-1 text-sm"
+            className={`absolute w-31 bg-black text-white border-${ isOTSDoctorViewing ? 'r':'l'}-20 rounded px-2 py-1 text-sm`}
             style={{
                 top: `${top}px`,
                 height: `${height}px`,

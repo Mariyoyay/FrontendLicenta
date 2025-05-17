@@ -161,7 +161,7 @@ export default function OfficeSchedulePage() {
                             date={weekDates[dayIndex]}
                             day={day}
                             office={office}
-                            onOtherDayHasChanged={handleRefreshDay}
+                            onOtherDayNotified={handleRefreshDay}
                             hideCanceled={hideCanceled}
                             showOccupied={showOccupied}
                         />
