@@ -21,12 +21,7 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
 
     const createAppointment = async () => {
         try {
-            const {data: newAppointment} = await api.post("/api/time_slots/appointment/manage/add", {
-                ...timeSlot,
-                officeID: timeSlot.office.id,
-                doctorID: timeSlot.doctor.id,
-                patientID: timeSlot.patient.id,
-            });
+            const {data: newAppointment} = await api.post("/api/time_slots/appointment/manage/add", timeSlot);
             onSubmit(newAppointment);
         } catch (error) {
             console.error("Error creating timeSlot", error);
@@ -165,7 +160,11 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
                         <div>
                             <p className="font-semibold mb-1">Doctor:</p>
                             <div
-                                className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
+                                className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer"
+                                style={{
+                                    backgroundColor: timeSlot.doctor ? timeSlot.doctor.color : "#50A2FF",
+                                }}
+                            >
                                 {timeSlot.doctor ? (
                                     <>
                                         <div className="flex-1 items-center justify-center cursor-pointer">

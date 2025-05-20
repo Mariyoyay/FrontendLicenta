@@ -1,13 +1,14 @@
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import {useState} from 'react';
-import {Link, useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {register} from "../axios/authService.jsx";
+import { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { register } from "../axios/authService.jsx";
+import DatePicker, {registerLocale} from "react-datepicker";
+import enGB from "date-fns/locale/en-GB";
 
 function Register() {
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
 
     const [userDetails, setUserDetails] = useState({
@@ -19,66 +20,151 @@ function Register() {
         dateOfBirth: ""
     });
 
+    registerLocale("en-GB", enGB);
+
     const handleRegister = async (e) => {
         e.preventDefault();
-
         await dispatch(register(userDetails));
-
         navigate("/login");
-    }
+    };
 
     return (
-        <div className="login-container">
-            <form className="login-box" onSubmit={handleRegister}>
-                <h2>Please provide your registration details below</h2>
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+            <form
+                onSubmit={handleRegister}
+                className="bg-white shadow-md rounded-lg p-8 w-full max-w-md space-y-6"
+            >
+                <h2 className="text-2xl font-semibold text-gray-800 text-center">
+                    Please provide your registration details below
+                </h2>
 
-                <label htmlFor="firstName">First Name:</label>
-                <input type="text" id="firstName" placeholder="First Name"
-                       onChange={(e) => setUserDetails({...userDetails, firstName: e.target.value})}/>
+                <div className="space-y-2">
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                        First Name
+                    </label>
+                    <input
+                        id="firstName"
+                        type="text"
+                        placeholder="John"
+                        onChange={(e) => setUserDetails({ ...userDetails, firstName: e.target.value })}
+                        required
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
 
-                <label htmlFor="lastName">Last Name:</label>
-                <input type="text" id="lastName" placeholder="Last Name"
-                       onChange={(e) => setUserDetails({...userDetails, lastName: e.target.value})}/>
+                <div className="space-y-2">
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                        Last Name
+                    </label>
+                    <input
+                        id="lastName"
+                        type="text"
+                        placeholder="Doe"
+                        onChange={(e) => setUserDetails({ ...userDetails, lastName: e.target.value })}
+                        required
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
 
-                <label htmlFor="email">Email:</label>
-                <input type="email" id="email" placeholder="Email"
-                       onChange={(e) => setUserDetails({...userDetails, email: e.target.value})}/>
+                <div className="space-y-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        Email
+                    </label>
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })}
+                        required
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
 
-                <label htmlFor="password">Password:</label>
-                <input type="password" id="password" placeholder="Password"
-                       onChange={(e) => setUserDetails({...userDetails, password: e.target.value})}/>
+                <div className="space-y-2">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        Password
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="••••••••"
+                        onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })}
+                        required
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
 
-                <PhoneInput
-                    country={'ro'}
-                    value={userDetails.phone}
-                    onChange={phoneNumber => setUserDetails({
-                        ...userDetails,
-                        phone: phoneNumber.startsWith('+') ? phoneNumber : '+' + phoneNumber
-                    })}
-                    inputStyle={{
-                        width: '100%',
-                        backgroundColor: '#1e1e1e', // dark background
-                        color: '#ffffff',           // white text
-                        border: '1px solid #444',
-                    }}
-                    buttonStyle={{
-                        backgroundColor: '#1e1e1e', // dark flag dropdown
-                        border: '1px solid #444',
-                    }}
-                    containerStyle={{marginBottom: '1rem'}}
-                />
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Phone Number
+                    </label>
+                    <PhoneInput
+                        country={'ro'}
+                        value={userDetails.phone}
+                        onChange={phoneNumber =>
+                            setUserDetails({
+                                ...userDetails,
+                                phone: phoneNumber.startsWith('+') ? phoneNumber : '+' + phoneNumber
+                            })
+                        }
+                        inputStyle={{
+                            width: '100%',
+                            height: '42px',
+                            paddingLeft: '48px', // makes room for the flag
+                            paddingRight: '12px',
+                            backgroundColor: 'white',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '0.375rem',
+                            fontSize: '1rem',
+                        }}
+                        buttonStyle={{
+                            border: '1px solid #d1d5db',
+                            borderTopLeftRadius: '0.375rem',
+                            borderBottomLeftRadius: '0.375rem',
+                        }}
+                        containerStyle={{ marginTop: '0.25rem' }}
+                    />
+                </div>
 
+                <div className="space-y-2">
+                    <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
+                        Date of Birth
+                    </label>
 
-                <label htmlFor="dateOfBirth">Date of Birth:</label>
-                <input type="date" id="dateOfBirth"
-                       onChange={(e) => setUserDetails({...userDetails, dateOfBirth: e.target.value})}/>
+                    <div className="customDatePickerWidth">
+                    <DatePicker
+                        selected={userDetails.dateOfBirth ? new Date(userDetails.dateOfBirth) : null}
+                        onChange={(date) =>
+                            setUserDetails({
+                                ...userDetails,
+                                dateOfBirth: date.toLocaleString("sv-SE").replace(" ", "T")
+                            })
+                        }
+                        placeholderText="dd-mm-yyyy"
+                        dateFormat="dd-MM-yyyy"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    </div>
+                </div>
 
-                <button type="submit">Register</button>
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition"
+                >
+                    Register
+                </button>
 
-                <label htmlFor="goLogin">Already have an account?</label>
-                <Link to="/login">
-                    <button id="goLogin">Log In</button>
-                </Link>
+                <div className="text-center pt-4 border-t border-gray-200">
+                    <p className="text-sm text-gray-600 mb-2">Already have an account?</p>
+                    <Link to="/login">
+                        <button
+                            type="button"
+                            className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            Log In
+                        </button>
+                    </Link>
+                </div>
             </form>
         </div>
     );

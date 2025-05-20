@@ -23,12 +23,7 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
 
     const saveAppointment = async () => {
         try {
-            const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
-                ...appointment,
-                officeID: appointment.office.id,
-                doctorID: appointment.doctor.id,
-                patientID: appointment.patient.id,
-            });
+            const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", appointment);
             onSave(updatedAppointment);
         } catch (error) {
             console.error("Error creating appointment", error);
@@ -49,9 +44,6 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
             const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
                 ...appointment,
                 isCanceled: false,
-                officeID: appointment.office.id,
-                doctorID: appointment.doctor.id,
-                patientID: appointment.patient.id,
             });
             onSave(updatedAppointment);
         } catch (error) {
@@ -179,7 +171,11 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                     <div>
                         <p className="font-semibold mb-1">Doctor:</p>
                         <div
-                            className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer">
+                            className="bg-blue-400 text-black p-4 rounded-lg flex items-center justify-center cursor-pointer"
+                            style={{
+                                backgroundColor: appointment.doctor ? appointment.doctor.color : "#50A2FF",
+                            }}
+                        >
                             {appointment.doctor ? (
                                 <>
                                     <div className="flex-1 items-center justify-center cursor-pointer">
@@ -192,7 +188,7 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                                         <button
                                             onClick={() => setUserToView({
                                                 email: appointment.doctor.email,
-                                                type: Roles.DOCTOR
+                                                type: Roles.DOCTOR,
                                             })}
                                             className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Details
                                         </button>

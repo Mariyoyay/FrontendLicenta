@@ -9,7 +9,7 @@ function ProtectedTestPage() {
             <Link to="/my-details"><button>My Details</button></Link>
             <Link to="/admin"><button>AdminPage</button></Link>
             <Link to="/office/1"><button>Office 1</button></Link>
-            <Link to="/office/2"><button>Office 2</button></Link>
+            <button onClick={() => console.error("Hey!")}>Throw Hey! error</button>
         </>
     );
 }

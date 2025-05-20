@@ -17,17 +17,19 @@ function OccupiedTimeSlotBox({occupiedTimeSlot, onClick: handleClick}) {
     const endTime = formatTime(dateTimeEnd);
 
     const startHour = dateTimeStart.getHours() + dateTimeStart.getMinutes() / 60;
-    const top = (startHour - 8) * 60 + 30;
+    const top = (startHour - 8) * 60;
     const height = (occupiedTimeSlot.durationMinutes / 60) * 60;
 
     return (
         <div
             key={occupiedTimeSlot.id}
-            className={`absolute w-31 bg-black text-white border-${ isOTSDoctorViewing ? 'r':'l'}-20 rounded px-2 py-1 text-sm`}
+            className={`absolute bg-black text-white rounded px-2 py-1 text-sm`}
             style={{
                 top: `${top}px`,
                 height: `${height}px`,
+                width: `${isOTSDoctorViewing ? '7.75' : '7.25'}rem`,
                 borderColor: occupiedTimeSlot.doctor.color,
+                borderWidth: `${isOTSDoctorViewing ? '0 20px 0 0' : '0 0 0 20px'}`,
                 opacity: `${isOTSDoctorViewing ? "1" : "0.4" }`,
                 zIndex: `${isOTSDoctorViewing ? "1" : "2" }`
             }}

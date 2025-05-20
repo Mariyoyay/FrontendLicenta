@@ -6,6 +6,8 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [searchQuery, setSearchQuery] = useState("");
+
     useEffect(() => {
         const fetchUsers = async () => {
             setLoading(true);
@@ -37,6 +39,26 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
         setLoading(false);
     }, [givenUsers, roles]);
 
+
+
+    const standardizeText = (text) => {
+        return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    const filteredUsers = users.filter((user) => {
+        const q = standardizeText(searchQuery);
+        const name = standardizeText(user.firstName + ' ' + user.lastName);
+        const email = standardizeText(user.email);
+        const phone = standardizeText(user.phone);
+
+        return (
+            email.includes(q) ||
+            name.includes(q) ||
+            phone.includes(q)
+        );
+    });
+
+
     return (
         <div className="fixed inset-0 z-50 bg-[rgba(0,0,0,0.5)] flex items-center justify-center">
             <div className="bg-white rounded-xl p-6 shadow-2xl w-full max-w-lg relative">
@@ -56,11 +78,23 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
                     }
                 </h2>
 
+                <div className="flex items-center justify-center gap-2 mb-8 w-full">
+                    <label className="font-medium"> 🔍 </label>
+                    <input
+                        type="text"
+                        placeholder="Search by name, email or phone number"
+                        className="flex-grow border border-blue-900 px-4 py-2 rounded-md text-gray-700"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+
+
                 {loading ? (
                     <p className="text-center text-gray-500">Loading...</p>
                 ) : (
                     <ul className="space-y-2 max-h-80 overflow-y-auto">
-                        {users.map((user) => (
+                        {filteredUsers.map((user) => (
                             <li
                                 key={user.id}
                                 className="bg-blue-100 hover:bg-blue-200 p-3 rounded cursor-pointer"

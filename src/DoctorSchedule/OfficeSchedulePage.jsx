@@ -4,6 +4,7 @@ import SelectOfficeModal from "./SelectOfficeModal.jsx";
 import OfficeSelector from "./OfficeSelector.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import api from "../axios/api.jsx";
+import SelectOfficeDropdown from "./SelectOfficeDropdown.jsx";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -107,12 +108,19 @@ export default function OfficeSchedulePage() {
 
 
             <button
-                onClick={() => setEnableSelectOffice(true)}
+                onClick={() => setEnableSelectOffice(prevState => !prevState)}
                 className="absolute top-2 right-3 background bg-yellow-100 hover:bg-yellow-400 text-gray-600 hover:text-black text-2xl font-bold"
                 aria-label="Close modal"
             >
                 Change Office
             </button>
+            {enableSelectOffice && (
+                <SelectOfficeDropdown onSelect={(selectedOffice) => {
+                    navigate(`/office/${selectedOffice.id}`);
+                    setEnableSelectOffice(false);
+                }} onClose={() => setEnableSelectOffice(false)}/>
+            )}
+
 
             <h2 className="text-2xl font-bold mb-4">OFFICE PROGRAM</h2>
             <h3 className="text-xl font-bold mb-4">Office {office.id} - {office.name}</h3>
@@ -168,13 +176,6 @@ export default function OfficeSchedulePage() {
                     ))}
                 </div>
             </div>
-
-            {enableSelectOffice && (
-                <SelectOfficeModal onSelect={(selectedOffice) => {
-                    navigate(`/office/${selectedOffice.id}`);
-                    setEnableSelectOffice(false);
-                }} onClose={() => setEnableSelectOffice(false)}/>
-            )}
 
         </div>
     );

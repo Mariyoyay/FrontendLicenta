@@ -1,7 +1,6 @@
 import UserDetails from "./UserDetails.jsx";
 import api from "./axios/api.jsx";
 import {useEffect, useState} from "react";
-import store from "./redux/store.jsx";
 
 
 function MyDetails() {
@@ -23,7 +22,7 @@ function MyDetails() {
     const handleClick = (e) => {
         e.preventDefault();
 
-        console.log(store.getState().auth);
+        console.log(currentUser);
     }
 
     return(

@@ -91,15 +91,15 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
             <h3 className="text-xl font-bold">{day.toUpperCase()}</h3>
             <p className="mb-4">{getDateLabel(date)}</p>
 
-            <div className="relative bg-yellow-100 border-2 border-red-600 rounded-2xl p-4 w-50 h-[815px]">
+            <div className="relative bg-yellow-100 border-2 border-red-600 rounded-2xl p-4 w-50 h-[785px]">
                 {/* Time labels on left */}
                 <div className="absolute left-0 top-0 w-full h-full">
-                    <div className="h-[30px] bg-yellow-100 w-full rounded-3xl"></div>
+                    {/*<div className="h-[30px] bg-yellow-100 w-full rounded-3xl"></div>*/}
 
                     {hours.map((hour, i) => (
                         <React.Fragment key={i}>
                             {/* Time line + label */}
-                            <div className="h-[30px] flex items-center bg-yellow-100 w-full">
+                            <div className="h-[30px] flex items-center rounded-3xl bg-yellow-100 w-full">
                                 <span className="text-sm text-black w-14 pl-2">{hour}</span>
                                 <div className="flex-1 border-t-4 border-black rounded mr-2"></div>
                             </div>

@@ -13,7 +13,7 @@ function AppointmentBox({ appointment, onClick: handleClick}) {
     const endTime = formatTime(dateTimeEnd);
 
     const startHour = dateTimeStart.getHours() + dateTimeStart.getMinutes() / 60;
-    const top = (startHour - 8) * 60 + 30;
+    const top = (startHour - 8) * 60;
     const height = (appointment.durationMinutes / 60) * 60;
 
     const color = appointment.doctor.color;

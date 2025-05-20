@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
 import api from "./axios/api.jsx";
+import UserDetails from "./UserDetails.jsx";
 
 
 // should be a get all roles form the backend :))))
 const roleList = ["ROLE_PATIENT", "ROLE_EMPLOYEE", "ROLE_DOCTOR", "ROLE_ADMIN"];
 
 const AdminGrantRolesPage = () => {
-    const [searchBy, setSearchBy] = useState("Both");
+    const [searchBy, setSearchBy] = useState("All");
     const [query, setQuery] = useState("");
     const [users, setUsers] = useState([]);
 
@@ -25,20 +26,28 @@ const AdminGrantRolesPage = () => {
     }, []);
 
 
-    const filteredUsers = users.filter((user) => {
-        const q = query.toLowerCase();
-        const name = user.firstName + ' ' + user.lastName;
+    const standardizeText = (text) => {
+        return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
 
-        if (searchBy === "Email") return user.email.toLowerCase().includes(q);
-        if (searchBy === "Name") return name.toLowerCase().includes(q);
+    const filteredUsers = users.filter((user) => {
+        const q = standardizeText(query);
+        const name = standardizeText(user.firstName + ' ' + user.lastName);
+        const email = standardizeText(user.email);
+        const phone = standardizeText(user.phone);
+
+        if (searchBy === "Email") return email.includes(q);
+        if (searchBy === "Name") return name.includes(q);
+        if (searchBy === "Phone") return phone.includes(q);
         return (
-            user.email.toLowerCase().includes(q) ||
-            name.toLowerCase().includes(q)
+            email.includes(q) ||
+            name.includes(q) ||
+            phone.includes(q)
         );
     });
 
     const toggleRole = async (user, role) => {
-        const hasRole = user.rolesAsString.includes(role);
+        const hasRole = user.roles.includes(role);
         const url = `/api/users/roles/manage/${user.email}/${hasRole ? 'remove' : 'add'}`;
 
         const roles = [role];
@@ -53,56 +62,62 @@ const AdminGrantRolesPage = () => {
     };
 
     return (
-        <div className="container">
-            <h2 className="header">
-                Admin Page<br />Add Roles to Different Users
+        <div className="max-w-4xl mx-auto px-4 py-8">
+            <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6">
+                Admin Page<br />
+                <span className="text-lg font-normal">Add Roles to Different Users</span>
             </h2>
 
-            <div className="search-bar">
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+                <label className="font-medium">Search by:</label>
                 <select
-                    className="select"
+                    className="border border-blue-900 px-4 py-2 rounded-md"
                     value={searchBy}
                     onChange={(e) => setSearchBy(e.target.value)}
                 >
                     <option value="Email">Email</option>
                     <option value="Name">Name</option>
-                    <option value="Both">Both</option>
+                    <option value="Phone">Phone Number</option>
+                    <option value="All">All</option>
                 </select>
                 <input
                     type="text"
                     placeholder="eg. John Doe"
-                    className="input"
+                    className="border border-blue-900 px-4 py-2 rounded-md text-gray-700"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
-                <button>🔍</button>
+                <button className="p-2 border border-blue-900 rounded-md hover:bg-blue-100">
+                    🔍
+                </button>
             </div>
 
             {filteredUsers.map((user) => (
                 <div
                     key={user.email}
-                    className="user-card"
+                    className="border-2 border-red-500 bg-yellow-100 rounded-xl p-4 mb-6 shadow-md"
                 >
-                    <div className="user-info">
-                        <strong>First Name:</strong> {user.firstName}
-                        <br />
-                        <strong>Last Name:</strong> {user.lastName}
-                        <br />
-                        <strong>Email:</strong> {user.email}
+                    <div className="mb-4">
+                        <UserDetails user={user} />
                     </div>
-                    <div className="roles">
-                        {roleList.map((role) => (
-                            <button
-                                key={role}
-                                onClick={() => toggleRole(user, role)}
-                                className={`role-button ${user.rolesAsString.includes(role) ? "enabled" : "disabled"}`}
-                            >
-                                {role.substring(5)}
-                                <div style={{ fontSize: "0.75rem" }}>
-                                    {user.rolesAsString.includes(role) ? "enabled" : "disabled"}
-                                </div>
-                            </button>
-                        ))}
+
+                    <div className="flex flex-wrap gap-3">
+                        {roleList.map((role) => {
+                            const isEnabled = user.roles.includes(role);
+                            return (
+                                <button
+                                    key={role}
+                                    onClick={() => toggleRole(user, role)}
+                                    className={`px-4 py-2 rounded-md text-white text-sm font-bold flex flex-col items-center justify-center min-w-[90px]
+                  ${isEnabled ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800"}`}
+                                >
+                                    {role.substring(5)}
+                                    <span className="text-xs font-normal mt-1">
+                  {isEnabled ? "enabled" : "disabled"}
+                </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             ))}
