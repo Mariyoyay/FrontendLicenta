@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from "react";
-import DaySchedule from "./DaySchedule";
-import SelectOfficeModal from "./SelectOfficeModal.jsx";
-import OfficeSelector from "./OfficeSelector.jsx";
+import DayOfficeSchedule from "./DayOfficeSchedule.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import api from "../axios/api.jsx";
-import SelectOfficeDropdown from "./SelectOfficeDropdown.jsx";
+import PageWithTopAndSideBar from "../pages/PageWithTopAndSideBar.jsx";
+import OfficeSelector from "./OfficeSelector.jsx";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -91,42 +90,40 @@ export default function OfficeSchedulePage() {
     const weekDates = getWeekDates(weekStart);
 
     if (!office) return (
-        <div className="p-4">
-            <p>LOADING...</p>
-        </div>
+        <PageWithTopAndSideBar>
+            <div className="p-4">
+                <p>LOADING...</p>
+            </div>
+        </PageWithTopAndSideBar>
     );
     else return (
-        <div className="p-4">
-
-            <button
-                onClick={() => navigate("/ptp")}
-                className="absolute top-2 left-3 background bg-red-300 hover:bg-red-600 text-gray-600 hover:text-black text-2xl font-bold"
-                aria-label="Close modal"
-            >
-                Go To P.T.P.
-            </button>
-
-
-            <button
-                onClick={() => setEnableSelectOffice(prevState => !prevState)}
-                className="absolute top-2 right-3 background bg-yellow-100 hover:bg-yellow-400 text-gray-600 hover:text-black text-2xl font-bold"
-                aria-label="Close modal"
-            >
-                Change Office
-            </button>
-            {enableSelectOffice && (
-                <SelectOfficeDropdown onSelect={(selectedOffice) => {
-                    navigate(`/office/${selectedOffice.id}`);
-                    setEnableSelectOffice(false);
-                }} onClose={() => setEnableSelectOffice(false)}/>
-            )}
+        <PageWithTopAndSideBar>
+            <div className="p-4">
+                <div className="absolute top-2 right-3">
+                    {enableSelectOffice && (
+                        <div
+                            className="absolute right-0 top-[100%] mt-2  bg-white border border-gray-300 rounded shadow z-50">
+                            <OfficeSelector onSelect={(selectedOffice) => {
+                                navigate(`/office/${selectedOffice.id}`);
+                                setEnableSelectOffice(false);
+                            }} onClose={() => setEnableSelectOffice(false)}/>
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setEnableSelectOffice(prevState => !prevState)}
+                        className=" background bg-yellow-100 hover:bg-yellow-400 text-gray-600 hover:text-black text-2xl font-bold"
+                        aria-label="Close modal"
+                    >
+                        Change Office
+                    </button>
+                </div>
 
 
-            <h2 className="text-2xl font-bold mb-4">OFFICE PROGRAM</h2>
-            <h3 className="text-xl font-bold mb-4">Office {office.id} - {office.name}</h3>
-            <div className="flex items-center mb-4">
-                <button
-                    className="bg-gray-200 text-gray-700 rounded-full w-10 h-10 flex items-center justify-center mr-2"
+                <h2 className="text-2xl font-bold mb-4">OFFICE PROGRAM</h2>
+                <h3 className="text-xl font-bold mb-4">Office {office.id} - {office.name}</h3>
+                <div className="flex items-center mb-4">
+                    <button
+                        className="bg-gray-200 text-gray-700 rounded-full w-10 h-10 flex items-center justify-center mr-2"
                     onClick={handlePrevWeek}
                 >
                     &lt;
@@ -164,7 +161,7 @@ export default function OfficeSchedulePage() {
             <div className="w-full px-4">
                 <div className="grid grid-cols-5 gap-4">
                     {days.map((day, dayIndex) => (
-                        <DaySchedule
+                        <DayOfficeSchedule
                             key={dayIndex + "-refreshValue-" + (refreshKeys[dayIndex] || 0)}
                             date={weekDates[dayIndex]}
                             day={day}
@@ -178,5 +175,6 @@ export default function OfficeSchedulePage() {
             </div>
 
         </div>
+        </PageWithTopAndSideBar>
     );
 }

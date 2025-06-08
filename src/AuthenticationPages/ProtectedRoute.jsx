@@ -1,7 +1,7 @@
 import store from "../redux/store.jsx";
 import {Link} from "react-router-dom";
 
-function ProtectedRoute({element: component, permissions}) {
+function ProtectedRoute({children, permissions}) {
 
     const loggedOutComponent = (
         <>
@@ -22,13 +22,13 @@ function ProtectedRoute({element: component, permissions}) {
     const hasPermission = () => {
         if (!permissions) return true;
         for (let permission of permissions) {
-            if (store.getState().auth.roles.includes(permission))
+            if (store.getState().auth.roles.includes(permission.code))
                 return true;
         }
         return false;
     }
 
-    return store.getState().auth.isAuthenticated ? (hasPermission() ? component : permissionDeniedComponent) : loggedOutComponent;
+    return store.getState().auth.isAuthenticated ? (hasPermission() ? children : permissionDeniedComponent) : loggedOutComponent;
 }
 
 export default ProtectedRoute;

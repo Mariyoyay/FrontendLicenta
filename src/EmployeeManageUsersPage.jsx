@@ -7,7 +7,7 @@ import PageWithTopAndSideBar from "./pages/PageWithTopAndSideBar.jsx";
 
 
 
-const AdminGrantRolesPage = () => {
+const EmployeeManageUsersPage = () => {
     const [searchBy, setSearchBy] = useState("All");
     const [query, setQuery] = useState("");
     const [users, setUsers] = useState([]);
@@ -51,55 +51,12 @@ const AdminGrantRolesPage = () => {
         );
     });
 
-    const toggleRole = (user, role) => {
-        const hasRole = user.roles.includes(role.code);
-
-        const confirmed = window.confirm(`Are you sure you want to ${hasRole ? 'remove' : 'add'} the role of "${role.beautiful}" ${hasRole ? 'from' : 'to'} the user "${user.firstName + ' ' + user.lastName}"?`);
-
-        if (!confirmed) return;
-
-        const changeRoles = async () => {
-
-            const url = `/api/users/roles/manage/${user.email}/${hasRole ? 'remove' : 'add'}`;
-
-            const roles = [role.code];
-
-            try {
-                const {data: updatedUser} = !hasRole ? await api.post(url, roles) : await api.delete(url, {data: roles});
-                setUsers(prev => prev.map(u => (u.email === updatedUser.email ? updatedUser : u)));
-            } catch (error) {
-                console.error("Error fetching roles: " + error);
-            }
-        }
-
-        void changeRoles();
-
-    };
-
-    const handleDelete = (user) => {
-
-        const confirmed = window.confirm(`Are you sure you want to delete user "${user.firstName + ' ' + user.lastName}"?`);
-
-        if (!confirmed) return;
-
-        const deleteUser = async () => {
-            try {
-                const {data: deletedUser} = await api.delete(`api/users/manage/delete`, {data: user});
-                setUsers(prev => prev.filter(u => u.id !== deletedUser.id));
-            } catch (error) {
-                console.error("Error deleting user: " + error);
-            }
-        }
-
-        void deleteUser();
-    }
-
     return (
         <PageWithTopAndSideBar>
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <h2 className="text-2xl md:text-3xl font-semibold text-center mb-6">
-                    Admin User Page<br/>
-                    <span className="text-lg font-normal">Add Roles to Different Users</span>
+                    Manage Patients<br/>
+                    <span className="text-lg font-normal">Edit User Details & Add New Users</span>
                 </h2>
 
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
@@ -140,36 +97,27 @@ const AdminGrantRolesPage = () => {
                         className="border-2 border-red-500 bg-yellow-100 rounded-xl p-4 mb-6 shadow-md"
                     >
                         <div className="mb-4">
-                        <UserDetails user={user}/>
+                            <UserDetails user={user}/>
                         </div>
 
                         <div className="flex justify-center flex-wrap gap-3">
                             {Roles.all.map((role) => {
                                 const isEnabled = user.roles.includes(role.code);
                                 return (
-                                    <button
+                                    <div
                                         key={role.code}
-                                        onClick={() => toggleRole(user, role)}
                                         className={`px-4 py-2 rounded-md text-white text-sm font-bold flex flex-col items-center justify-center min-w-[90px]
-                      ${isEnabled ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800"}`}
+                      ${isEnabled ? "bg-red-600" : "bg-black"}`}
                                     >
                                         {role.beautiful}
                                         <span className="text-xs font-normal mt-1">
                       {isEnabled ? "enabled" : "disabled"}
                     </span>
-                                    </button>
+                                    </div>
                                 );
                             })}
                         </div>
-                        <div className="mt-4 flex justify-between items-center">
-                            <button
-                                className="bg-red-600 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
-                                onClick={() => {
-                                    handleDelete(user);
-                                }}
-                            >
-                                Delete User
-                            </button>
+                        <div className="mt-4 flex justify-end items-center">
                             <button
                                 className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
                                 onClick={() => {
@@ -199,11 +147,9 @@ const AdminGrantRolesPage = () => {
                         }} onExit={() => setEditedUser(null)}/>
                     </div>
                 )}
-
-
             </div>
         </PageWithTopAndSideBar>
     );
 };
 
-export default AdminGrantRolesPage;
+export default EmployeeManageUsersPage;

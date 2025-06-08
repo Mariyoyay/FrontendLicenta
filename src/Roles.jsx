@@ -16,4 +16,6 @@ const Roles = {
         beautiful: 'Patient',
     },
 };
+
+Roles.all = [Roles.PATIENT, Roles.EMPLOYEE, Roles.DOCTOR, Roles.ADMIN];
 export { Roles };

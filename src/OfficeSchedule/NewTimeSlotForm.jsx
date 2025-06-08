@@ -59,7 +59,7 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
 
             <h2 className="text-center text-2xl font-bold text-gray-800">New {timeSlot.type === "APPOINTMENT" ? "Appointment" : "Occupied Time Slot"}</h2>
 
-            {timeSlot.office?.doctors?.map((d) => {return d.email;}).includes(store.getState().auth.username) ? (
+            {(timeSlot.office?.doctors?.map((d) => {return d.email;}).includes(store.getState().auth.username) || timeSlot.doctor?.email === store.getState().auth.username) && (
                 <div className="flex items-center justify-between w-full p-2 pb-4 border-b mb-4">
                     <span className="font-medium">Type:</span>
                     <div className="flex space-x-2">
@@ -85,7 +85,7 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
                         </button>
                     </div>
                 </div>
-            ) : <></>}
+            )}
 
             <div className={`grid md:grid-cols-${timeSlot.type === "APPOINTMENT" ? "2" : "1"} gap-6`}>
                 {/* Left Column */}

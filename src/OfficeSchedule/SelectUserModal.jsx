@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import api from "../axios/api.jsx";
-import {Roles} from "../Roles.jsx"; // Assumes your API client is set up
+import {Roles} from "../Roles.jsx";
+import CreateEditUserForm from "../AuthenticationPages/CreateEditUserForm.jsx"; // Assumes your API client is set up
 
-const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onClose }) => {
+const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, enableAdd, onSelect, onClose }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [searchQuery, setSearchQuery] = useState("");
+    const [enableAddForm, setEnableAddForm] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -47,13 +49,14 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
 
     const filteredUsers = users.filter((user) => {
         const q = standardizeText(searchQuery);
-        const name = standardizeText(user.firstName + ' ' + user.lastName);
+        const firstNameLastName = standardizeText(user.firstName + ' ' + user.lastName);
+        const lastNameFirstName = standardizeText(user.lastName + ' ' + user.firstName);
         const email = standardizeText(user.email);
         const phone = standardizeText(user.phone);
 
         return (
             email.includes(q) ||
-            name.includes(q) ||
+            firstNameLastName.includes(q) || lastNameFirstName.includes(q) ||
             phone.includes(q)
         );
     });
@@ -87,6 +90,13 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    {enableAdd === true && !enableAddForm && (<button
+                        onClick={() => setEnableAddForm(prev => !prev)}
+                        className="text-gray-600 hover:text-black text-2xl font-bold"
+                        aria-label="Close modal"
+                    >
+                        {"Add User"}
+                    </button>)}
                 </div>
 
 
@@ -102,11 +112,20 @@ const SelectUserModal = ({ fromList: givenUsers,  byRoles: roles, onSelect, onCl
                             >
                                 <p className="font-semibold">{user.firstName} {user.lastName}</p>
                                 <p className="text-sm text-gray-600">{user.email}</p>
+                                <p className="text-sm text-gray-600">{user.phone}</p>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
+
+            {enableAddForm && (
+                <CreateEditUserForm onSave={(newUser) => {
+                    setUsers([...users, newUser]);
+                    setEnableAddForm(false);
+                }} onExit={() => setEnableAddForm(false)} />
+            )}
+
         </div>
     );
 };

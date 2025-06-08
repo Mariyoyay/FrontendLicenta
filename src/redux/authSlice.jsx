@@ -32,7 +32,7 @@ const authSlice = createSlice({
             state.user = null;
             state.username = null;
             state.roles = [];
-            state.isAuthenticated = false;
+            state.isAuthenticated =         false;
             localStorage.removeItem('access_token');
         },
     },

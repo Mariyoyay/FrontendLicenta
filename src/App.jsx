@@ -5,41 +5,61 @@ import Register from "./AuthenticationPages/Register.jsx";
 import {Provider} from "react-redux";
 import { store } from "./redux/store.jsx";
 import ProtectedRoute from "./AuthenticationPages/ProtectedRoute.jsx";
-import ProtectedTestPage from "./ProtectedTestPage.jsx";
 import LogoutButton from "./AuthenticationPages/LogoutButton.jsx";
 import MyDetails from "./MyDetails.jsx";
-import HomePage from "./HomePage.jsx";
 import NotFoundPage from "./NotFoundPage.jsx";
 import AdminGrantRolesPage from "./AdminGrantRolesPage.jsx";
-import OfficeSchedulePage from "./DoctorSchedule/OfficeSchedulePage.jsx";
+import OfficeSchedulePage from "./OfficeSchedule/OfficeSchedulePage.jsx";
+import {Roles} from "./Roles.jsx";
+import AdminManageOfficesPage from "./AdminManageOfficesPage.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import SelectOfficePage from "./OfficeSchedule/SelectOfficePage.jsx";
+import MyselfDoctorSchedulePage from "./DoctorSchedule/MyDoctorSchedulePage.jsx";
+import MyAppointmentsPage from "./MyAppointmentsPage.jsx";
+import ContactWidget from "./pages/ContactWidget.jsx";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
+import EmployeeManageUsersPage from "./EmployeeManageUsersPage.jsx";
+import MakePatientAppointmentPage from "./PatientMakeAppointment/MakePatientAppointmentPage.jsx";
 
 function App() {
-  return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <Routes>
-              {/*Authentication Pages*/}
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/logout" element={<ProtectedRoute element={<LogoutButton />} />} />
+    return (
+        <Provider store={store}>
+            <BrowserRouter>
+                <Routes>
+                    {/*Authentication Pages*/}
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
 
-              {/*Home Page*/}
-              <Route path="/" element={<Navigate to="/home" />} />
-              <Route path="/home" element={<HomePage />} />
+                    <Route path="/logout" element={<ProtectedRoute> <LogoutButton/> </ProtectedRoute>} />
 
-              <Route path="/ptp" element={<ProtectedRoute element={<ProtectedTestPage />}/>} />
-              <Route path="/my-details" element={<ProtectedRoute element={<MyDetails />} />} />
+                    {/*Home Page*/}
+                    <Route path="/" element={<Navigate to="/home" />} />
+                    <Route path="/home" element={<HomePage/>} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
-              <Route path="/admin" element={<ProtectedRoute permissions={["ROLE_ADMIN"]} element={<AdminGrantRolesPage />} />} />
 
-              <Route path="/office/:id" element={<ProtectedRoute permissions={["ROLE_EMPLOYEE", "ROLE_DOCTOR"]} element={<OfficeSchedulePage />} />} />
+                    <Route path="/my-details" element={<ProtectedRoute><MyDetails /> </ProtectedRoute>} />
 
-              {/*No Page Found*/}
-              <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </BrowserRouter>
-      </Provider>
-  );
+
+                    <Route path="/admin/users" element={<ProtectedRoute permissions={[Roles.ADMIN]}> <AdminGrantRolesPage /> </ProtectedRoute>} />
+                    <Route path="/admin/offices" element={<ProtectedRoute permissions={[Roles.ADMIN]} > <AdminManageOfficesPage /> </ProtectedRoute>} />
+
+                    <Route path="/employee/users" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}><EmployeeManageUsersPage/></ProtectedRoute> }/>
+
+                    <Route path="/office" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}> <SelectOfficePage /> </ProtectedRoute>} />
+                    <Route path="/office/:id" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}> <OfficeSchedulePage /> </ProtectedRoute>} />
+
+                    <Route path="/doctor/my-schedule" element={<ProtectedRoute permissions={[Roles.DOCTOR]}><MyselfDoctorSchedulePage/></ProtectedRoute>} />
+
+                    <Route path="/patient/my-appointments" element={<ProtectedRoute permissions={[Roles.PATIENT]}><MyAppointmentsPage/></ProtectedRoute> } />
+                    <Route path="/patient/schedule-appointment" element={<ProtectedRoute permissions={[Roles.PATIENT]}><MakePatientAppointmentPage/></ProtectedRoute>} />
+
+                    {/*No Page Found*/}
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </BrowserRouter>
+        </Provider>
+    );
 }
 
 export default App;

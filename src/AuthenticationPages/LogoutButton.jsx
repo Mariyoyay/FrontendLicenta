@@ -2,7 +2,7 @@ import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {logout} from "../axios/authService.jsx";
 
-function LogoutButton() {
+function LogoutButton({className}) {
 
     const dispatch = useDispatch();
 
@@ -12,12 +12,12 @@ function LogoutButton() {
         e.preventDefault();
         await dispatch(logout());
 
-        navigate("/login");
+        navigate("/home");
     }
 
 
     return(
-         <button type="submit" onClick={handleLogout}>Log Out</button>
+         <button className={className} type="submit" onClick={handleLogout}>Log Out</button>
     );
 }
 

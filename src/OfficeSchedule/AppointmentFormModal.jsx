@@ -292,12 +292,16 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
 
             {userTypeToSelect && userTypeToSelect === Roles.PATIENT && (
                 <SelectUserModal byRoles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
-                                 onClose={() => setUserTypeToSelect(null)}/>
+                                 onClose={() => setUserTypeToSelect(null)}
+                                 enableAdd={true}
+                />
             )}
 
             {userTypeToSelect && userTypeToSelect === Roles.DOCTOR && (
                 <SelectUserModal byRoles={[userTypeToSelect]} fromList={appointment.office.doctors} onSelect={handleChangePatientDoctor}
-                                 onClose={() => setUserTypeToSelect(null)}/>
+                                 onClose={() => setUserTypeToSelect(null)}
+                                 enableAdd={false}
+                />
             )}
         </div>
     );

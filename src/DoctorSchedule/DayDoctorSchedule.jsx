@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import api from "../axios/api";
-import AppointmentBox from "./AppointmentBox.jsx";
-import AppointmentFormModal from "./AppointmentFormModal.jsx";
-import OccupiedTimeSlotBox from "./OccupiedTimeSlotBox.jsx";
-import OccupiedTimeSlotForm from "./OccupiedTimeSlotForm.jsx";
-import NewTimeSlotForm from "./NewTimeSlotForm.jsx";
+import React, {useEffect, useState} from "react";
+import api from "../axios/api.jsx";
+import OccupiedTimeSlotBox from "../OfficeSchedule/OccupiedTimeSlotBox.jsx";
+import AppointmentBox from "../OfficeSchedule/AppointmentBox.jsx";
+import AppointmentFormModal from "../OfficeSchedule/AppointmentFormModal.jsx";
+import OccupiedTimeSlotForm from "../OfficeSchedule/OccupiedTimeSlotForm.jsx";
+import NewTimeSlotForm from "../OfficeSchedule/NewTimeSlotForm.jsx";
 
 const hours = Array.from({ length: 13 }, (_, i) => `${8 + i}:00`);
 
-function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hideCanceled, showOccupied}) {
+function DayDoctorSchedule({ date, day, doctor, onOtherDayNotified: notifyOtherDay, hideCanceled, showOccupied}) {
     const [timeSlots, setTimeSlots] = useState([]);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
@@ -16,7 +16,7 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
         const fetchSchedule = async () => {
             try {
                 const isoDate = date.toISOString().split("T")[0];
-                const { data } = await api.get(`/api/time_slots/day_schedule/office/${office.id}`, {
+                const { data } = await api.get(`/api/time_slots/day_schedule/doctor/${doctor.id}`, {
                     params: { date: isoDate },
                 });
                 setTimeSlots(data);
@@ -25,7 +25,7 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
             }
         };
         void fetchSchedule();
-    }, [date, office]);
+    }, [date, doctor]);
 
     const handleTryAdd = (hour) => {
         const isoDate = date.toISOString().split("T")[0];
@@ -34,11 +34,11 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
         const paddedMin = m.padStart(2, "0");
         const isoDateTime = `${isoDate}T${paddedHour}:${paddedMin}:00`;
 
-        setSelectedTimeSlot({type: "NEW", startTime: isoDateTime, office: office });
+        setSelectedTimeSlot({type: "NEW", startTime: isoDateTime, doctor: doctor });
     };
 
     const handleAdd = (newTimeSlot) => {
-        if (newTimeSlot.type === "OCCUPIED" || newTimeSlot.office.id === office.id) {
+        if (newTimeSlot.type === "OCCUPIED" || newTimeSlot.doctor.id === doctor.id) {
             const newTimeSlotDate = new Date(newTimeSlot.startTime).toISOString().split("T")[0];
             if (newTimeSlotDate === date.toISOString().split("T")[0]) {
                 setTimeSlots([...timeSlots, newTimeSlot]);
@@ -53,7 +53,7 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
 
     const handleSave = (updatedTimeSlot) => {
         const updatedDate = new Date(updatedTimeSlot.startTime).toISOString().split("T")[0];
-        if (updatedTimeSlot.type === "APPOINTMENT" && updatedTimeSlot.office.id !== office.id) {
+        if (updatedTimeSlot.type === "APPOINTMENT" && updatedTimeSlot.doctor.id !== doctor.id) {
             setTimeSlots((prev) => prev.filter((timeSlot) => timeSlot.type !== updatedTimeSlot.type || timeSlot.id !== updatedTimeSlot.id));
             setSelectedTimeSlot(null);
         } else if (updatedDate === date.toISOString().split("T")[0]) {
@@ -140,13 +140,13 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
 
             {selectedTimeSlot && selectedTimeSlot.type === "APPOINTMENT" && (
                 <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50">
-                        <AppointmentFormModal
-                            appointment={selectedTimeSlot}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                            onDelete={handleDelete}
-                            onExit={() => setSelectedTimeSlot(null)}
-                        />
+                    <AppointmentFormModal
+                        appointment={selectedTimeSlot}
+                        onSave={handleSave}
+                        onCancel={handleCancel}
+                        onDelete={handleDelete}
+                        onExit={() => setSelectedTimeSlot(null)}
+                    />
                 </div>
             )}
 
@@ -169,5 +169,4 @@ function DaySchedule({ date, day, office, onOtherDayNotified: notifyOtherDay, hi
         </div>
     );
 }
-
-export default DaySchedule;
+export default DayDoctorSchedule;
