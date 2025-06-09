@@ -54,7 +54,10 @@ export default function NavigationMenu() {
                             >
                                 Manage Offices' Doctors
                             </button>
-                            <button className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1">
+                            <button
+                                className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"
+                                onClick={() => navigate("/admin/backup")}
+                            >
                                 Backup Medical Data
                             </button>
                         </div>
@@ -79,8 +82,11 @@ export default function NavigationMenu() {
                             >
                                 My Schedule
                             </button>
-                            <button className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1">
-                                Manage Medical Record
+                            <button
+                                className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"
+                                onClick={() => navigate("/medical-records")}
+                            >
+                                Manage Medical Records
                             </button>
                         </div>
                     )}
@@ -111,7 +117,10 @@ export default function NavigationMenu() {
                             >
                                 Manage Patients
                             </button>
-                            <button className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1">
+                            <button
+                                className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"
+                                onClick={() => navigate("/medical-records")}
+                            >
                                 View Medical Records
                             </button>
                         </div>

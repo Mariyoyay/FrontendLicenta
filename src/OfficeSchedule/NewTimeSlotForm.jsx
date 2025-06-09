@@ -258,6 +258,7 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
 
             {userTypeToSelect && userTypeToSelect === Roles.PATIENT && (
                 <SelectUserModal byRoles={[userTypeToSelect]} onSelect={handleChangePatientDoctor}
+                                 enableAdd={true}
                                  onClose={() => setUserTypeToSelect(null)}/>
             )}
 

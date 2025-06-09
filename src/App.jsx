@@ -20,6 +20,9 @@ import ContactWidget from "./pages/ContactWidget.jsx";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
 import EmployeeManageUsersPage from "./EmployeeManageUsersPage.jsx";
 import MakePatientAppointmentPage from "./PatientMakeAppointment/MakePatientAppointmentPage.jsx";
+import SelectPatientMedicalRecordsPage from "./MedicalRecords/SelectPatientMedicalRecordsPage.jsx";
+import MedicalRecordPage from "./MedicalRecords/MedicalRecordPage.jsx";
+import BackupPage from "./MedicalRecords/BackupPage.jsx";
 
 function App() {
     return (
@@ -43,6 +46,7 @@ function App() {
 
                     <Route path="/admin/users" element={<ProtectedRoute permissions={[Roles.ADMIN]}> <AdminGrantRolesPage /> </ProtectedRoute>} />
                     <Route path="/admin/offices" element={<ProtectedRoute permissions={[Roles.ADMIN]} > <AdminManageOfficesPage /> </ProtectedRoute>} />
+                    <Route path="/admin/backup" element={<ProtectedRoute permissions={[Roles.ADMIN]} > <BackupPage /> </ProtectedRoute>} />
 
                     <Route path="/employee/users" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}><EmployeeManageUsersPage/></ProtectedRoute> }/>
 
@@ -53,6 +57,9 @@ function App() {
 
                     <Route path="/patient/my-appointments" element={<ProtectedRoute permissions={[Roles.PATIENT]}><MyAppointmentsPage/></ProtectedRoute> } />
                     <Route path="/patient/schedule-appointment" element={<ProtectedRoute permissions={[Roles.PATIENT]}><MakePatientAppointmentPage/></ProtectedRoute>} />
+
+                    <Route path="/medical-records" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}><SelectPatientMedicalRecordsPage/></ProtectedRoute> } />
+                    <Route path="/medical-records/:patient_id" element={<ProtectedRoute permissions={[Roles.EMPLOYEE, Roles.DOCTOR]}><MedicalRecordPage/></ProtectedRoute> } />
 
                     {/*No Page Found*/}
                     <Route path="*" element={<NotFoundPage />} />
