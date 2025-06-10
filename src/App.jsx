@@ -23,6 +23,8 @@ import MakePatientAppointmentPage from "./PatientMakeAppointment/MakePatientAppo
 import SelectPatientMedicalRecordsPage from "./MedicalRecords/SelectPatientMedicalRecordsPage.jsx";
 import MedicalRecordPage from "./MedicalRecords/MedicalRecordPage.jsx";
 import BackupPage from "./MedicalRecords/BackupPage.jsx";
+import VerifyEmail from "./AuthenticationPages/VerifyEmail.jsx";
+import ChangePassword from "./AuthenticationPages/ChangePassword.jsx";
 
 function App() {
     return (
@@ -32,8 +34,9 @@ function App() {
                     {/*Authentication Pages*/}
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
-
+                    <Route path="/verify-email" element={<VerifyEmail/>} />
                     <Route path="/logout" element={<ProtectedRoute> <LogoutButton/> </ProtectedRoute>} />
+                    <Route path="/change-password" element={<ChangePassword/>} />
 
                     {/*Home Page*/}
                     <Route path="/" element={<Navigate to="/home" />} />

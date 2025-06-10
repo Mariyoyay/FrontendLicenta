@@ -21,13 +21,20 @@ export default function AccountMenu() {
                     >
                         Account Details
                     </button>
-                    <LogoutButton className="w-full text-left px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"/>
+                    <button
+                        className="w-full text-left px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"
+                        onClick={() => navigate(`/change-password`)}
+                    >
+                        Change Password
+                    </button>
+                    <LogoutButton
+                        className="w-full text-left px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"/>
                 </>
-            ):(
+            ) : (
                 <>
                     <button
-                    className="w-full text-left px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"
-                    onClick={() => navigate(`/login`)}
+                        className="w-full text-left px-2 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"
+                        onClick={() => navigate(`/login`)}
                     >
                         Login
                     </button>

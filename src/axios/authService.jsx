@@ -1,4 +1,4 @@
-import {loginSuccess, logoutSuccess} from "../redux/authSlice.jsx";
+import {loginNotVerified, loginSuccess, logoutSuccess} from "../redux/authSlice.jsx";
 import api from "./api.jsx";
 import qs from "qs";
 
@@ -13,9 +13,15 @@ export const login = (credential) => async (dispatch) => {
                 },
             }
         );
-        dispatch(loginSuccess(data));
+
+        if (data["email_verified"] === "false"){
+            dispatch(loginNotVerified(data));
+        } else {
+            dispatch(loginSuccess(data));
+        }
     } catch (error) {
         console.error("Login failed with error: ", error);
+        dispatch(logoutSuccess());
     }
 };
 

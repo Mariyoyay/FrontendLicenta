@@ -12,6 +12,7 @@ import SelectOfficeModal from "./SelectOfficeModal.jsx";
 
 const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCancel, onDelete, onExit }) => {
     const [appointment, setAppointment] = useState(initialAppointment);
+    const [informPatient, setInformPatient] = useState(true);
 
     const [userToView, setUserToView] = useState({email: null, type: null});
 
@@ -23,7 +24,7 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
 
     const saveAppointment = async () => {
         try {
-            const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", appointment);
+            const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {...appointment, informPatient});
             onSave(updatedAppointment);
         } catch (error) {
             console.error("Error creating appointment", error);
@@ -37,23 +38,24 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
         } catch (error) {
             console.error("Error canceling appointment", error);
         }
-    }
+    };
 
     const rescheduleAppointment = async () => {
         try {
             const {data: updatedAppointment} = await api.post("/api/time_slots/appointment/manage/update", {
                 ...appointment,
                 isCanceled: false,
+                informPatient,
             });
             onSave(updatedAppointment);
         } catch (error) {
             console.error("Error rescheduling appointment", error);
         }
-    }
+    };
 
     const deleteAppointment = async () => {
         try {
-            const {data: deletedAppointment} = await api.delete("/api/time_slots/appointment/manage/delete", {data: appointment});
+            const {data: deletedAppointment} = await api.delete("/api/time_slots/appointment/manage/delete", {data: {...appointment, informPatient}});
             onDelete(deletedAppointment);
         } catch (error) {
             console.error("Error deleting appointment", error);
@@ -179,7 +181,8 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                             {appointment.doctor ? (
                                 <>
                                     <div className="flex-1 items-center justify-center cursor-pointer">
-                                        <p><strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}
+                                        <p>
+                                            <strong>Name:</strong> {appointment.doctor.firstName} {appointment.doctor.lastName}
                                         </p>
                                         <p><strong>Email:</strong> {appointment.doctor.email}</p>
                                         <p><strong>Phone:</strong> {appointment.doctor.phone}</p>
@@ -229,8 +232,18 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                             </div>
                         </div>
                     </div>
-
-
+                    <div className="flex items-center gap-2 my-2">
+                        <input
+                            id="inform-patient"
+                            type="checkbox"
+                            checked={informPatient}
+                            onChange={(e) => setInformPatient(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="inform-patient" className="text-sm font-medium text-gray-700">
+                            Inform patient by email
+                        </label>
+                    </div>
                 </div>
             </div>
 

@@ -10,6 +10,7 @@ import SelectOfficeModal from "./SelectOfficeModal.jsx";
 
 function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
     const [timeSlot, setTimeSlot] = useState({...modelTimeSlot, type: "APPOINTMENT"});
+    const [informPatient, setInformPatient] = useState(true);
 
     const [userToView, setUserToView] = useState({email: null, type: null});
 
@@ -21,7 +22,7 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
 
     const createAppointment = async () => {
         try {
-            const {data: newAppointment} = await api.post("/api/time_slots/appointment/manage/add", timeSlot);
+            const {data: newAppointment} = await api.post("/api/time_slots/appointment/manage/add", {...timeSlot, informPatient});
             onSubmit(newAppointment);
         } catch (error) {
             console.error("Error creating timeSlot", error);
@@ -225,6 +226,18 @@ function NewTimeSlotForm({ modelTimeSlot, onSubmit, onExit }) {
                                             className="bg-yellow-500 text-black px-3 py-1 rounded m-1">Choose Patient
                                     </button>
                                 )}
+                            </div>
+                            <div className="flex items-center gap-2 my-2">
+                                <input
+                                    id="inform-patient"
+                                    type="checkbox"
+                                    checked={informPatient}
+                                    onChange={(e) => setInformPatient(e.target.checked)}
+                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                />
+                                <label htmlFor="inform-patient" className="text-sm font-medium text-gray-700">
+                                    Inform patient by email
+                                </label>
                             </div>
                         </div>
                     </div>

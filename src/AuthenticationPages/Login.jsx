@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../axios/authService.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import PageWithTopAndSideBar from "../pages/PageWithTopAndSideBar.jsx";
+import store from "../redux/store.jsx";
 
 function Login() {
     const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -12,7 +13,16 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         await dispatch(login(credentials));
-        navigate("/home");
+
+        const authState = store.getState().auth;
+
+        if (!authState.recognizedAccount) {
+            alert("Login failed. Try Again!");
+        } else if (!authState.isAuthenticated) {
+            navigate("/verify-email");
+        } else {
+            navigate("/home");
+        }
     };
 
     return (
@@ -32,7 +42,7 @@ function Login() {
                         </label>
                         <input
                             onChange={(e) =>
-                                setCredentials({ ...credentials, username: e.target.value })
+                                setCredentials({...credentials, username: e.target.value})
                             }
                             type="email"
                             id="email"
@@ -48,7 +58,7 @@ function Login() {
                         </label>
                         <input
                             onChange={(e) =>
-                                setCredentials({ ...credentials, password: e.target.value })
+                                setCredentials({...credentials, password: e.target.value})
                             }
                             type="password"
                             id="password"
@@ -64,6 +74,12 @@ function Login() {
                     >
                         Log In
                     </button>
+
+                    <div className="text-center pt-4 border-t border-gray-200">
+                        <Link to="/change-password" className="text-sm font-medium text-gray-700">
+                            <p className="text-sm mb-2">Forgot password?</p>
+                        </Link>
+                    </div>
 
                     <div className="text-center pt-4 border-t border-gray-200">
                         <p className="text-sm text-gray-600 mb-2">Don't have an account yet?</p>

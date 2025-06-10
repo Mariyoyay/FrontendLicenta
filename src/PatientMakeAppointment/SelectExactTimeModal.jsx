@@ -50,7 +50,7 @@ function SelectExactTimeModal ({ startTime: initialStartTime, onSubmit, onExit }
                 <button
                     className="bg-green-600 text-black px-4 py-2 rounded hover:bg-gray-500 font-medium"
                     onClick={() => {
-                        if (new Date(startTime) > new Date())
+                        if (new Date(startTime) >= new Date())
                             onSubmit(startTime)
                         else
                             alert("You need to choose a date/time in the future")
