@@ -61,7 +61,7 @@ function MedicalRecordPage() {
     }
 
     const handleDeleteEntry = (entry) => {
-        const confirm = window.confirm("Are you sure you want to delete thi record entry?\n" + `${entry.time} - ${entry.doctor.lastName}\n${entry.content}`);
+        const confirm = window.confirm("Are you sure you want to delete thi record entry?\n" + `${entry.time} - ${entry.doctor.lastName || 'No Doctor'}\n${entry.content}`);
 
         if (!confirm) return;
 
@@ -106,8 +106,8 @@ function MedicalRecordPage() {
     const filteredEntries = medicalRecord.entries?.filter((entry) => {
         const q = standardizeText(searchQuery);
         const content = standardizeText(entry.content);
-        const doctorFirstName = standardizeText(entry.doctor.firstName);
-        const doctorLastName = standardizeText(entry.doctor.lastName);
+        const doctorFirstName = standardizeText(entry.doctor.firstName || "");
+        const doctorLastName = standardizeText(entry.doctor.lastName || "");
 
         return (
             content.includes(q) ||
@@ -210,7 +210,7 @@ function MedicalRecordPage() {
                 <div className="space-y-4  ">
                     {sortEntries(filteredEntries).map((entry) => (
                         <div key={entry.id} className="bg-blue-700 text-white p-4 rounded-lg shadow">
-                            <p><strong>Doctor — {entry.doctor.firstName + ' ' + entry.doctor.lastName}</strong></p>
+                            {entry.doctor.id && (<p><strong>Doctor — {entry.doctor.firstName + ' ' + entry.doctor.lastName}</strong></p>)}
                             <p>{format(new Date(entry.time), "dd/MM/yyyy")}</p>
                             <p className="my-2 whitespace-pre-line">{entry.content || "No content"}</p>
                             {entry.edited && (<p className="my-2 whitespace-pre-line">(Edited)</p>)}

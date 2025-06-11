@@ -46,13 +46,13 @@ export default function NavigationMenu() {
                                 className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"
                                 onClick={() => navigate("/admin/users")}
                             >
-                                Manage Users' Roles
+                                Manage Users & Roles
                             </button>
                             <button
                                 className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"
                                 onClick={() => navigate("/admin/offices")}
                             >
-                                Manage Offices' Doctors
+                                Manage Offices
                             </button>
                             <button
                                 className="w-full text-left bg-blue-500 text-white hover:bg-blue-600 rounded px-2 py-1"

@@ -90,7 +90,7 @@ const AdminGrantRolesPage = () => {
                 console.error("Error deleting user: " + error);
             }
         }
-
+        
         void deleteUser();
     }
 

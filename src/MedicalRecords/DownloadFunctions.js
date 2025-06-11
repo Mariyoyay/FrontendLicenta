@@ -82,7 +82,7 @@ const generatePdfDoc = (medicalRecord) => {
     };
 
     const tableData = sortedEntries().map((entry) => [
-        entry.doctor
+        entry.doctor?.id
             ? `${entry.doctor.firstName} ${entry.doctor.lastName}`
             : "Doctor Unknown",
         new Date(entry.time).toLocaleDateString(),

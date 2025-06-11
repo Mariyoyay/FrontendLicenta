@@ -130,15 +130,16 @@ const AppointmentFormModal = ({ appointment: initialAppointment, onSave, onCance
                     </div>
 
                     <div>
-                        <p className="font-semibold mb-1">Last Edited by:</p>
+                        <p className="font-semibold mb-1">Last Edited {appointment.lastEditUser.id && ('by')}:</p>
                         <div
                             className="bg-blue-400 text-black p-4 rounded-lg space-y-1 flex items-center justify-center cursor-pointer">
-                            <div className="flex-1 items-center justify-center cursor-pointer">
-                                <p><strong>Name:</strong> {appointment.lastEditUser.firstName} {appointment.lastEditUser.lastName}
+                            {appointment.lastEditUser.id && (<div className="flex-1 items-center justify-center cursor-pointer">
+                                <p>
+                                    <strong>Name:</strong> {appointment.lastEditUser.firstName} {appointment.lastEditUser.lastName}
                                 </p>
                                 <p><strong>Email:</strong> {appointment.lastEditUser.email}</p>
                                 <p><strong>Phone:</strong> {appointment.lastEditUser.phone}</p>
-                            </div>
+                            </div>)}
                             <div className="flex-1 items-center justify-center cursor-pointer">
                                 <p className="bg-yellow-300 text-black px-3 py-1 rounded m-1">
                                     At: {new Date(appointment.lastEditTime).toLocaleString("ro-MD")}
