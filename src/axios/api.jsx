@@ -6,7 +6,7 @@ import {data} from "react-router-dom";
 const SERVER_IP_ADDRESS = "localhost";
 
 const api = axios.create({
-    baseURL: `http://${SERVER_IP_ADDRESS}:8080`,
+    baseURL: `https://${SERVER_IP_ADDRESS}:8443`,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -41,7 +41,7 @@ api.interceptors.response.use((response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             if (!isRefreshing) {
@@ -57,7 +57,7 @@ api.interceptors.response.use((response) => response,
 
                     return api(originalRequest);
                 } catch (refreshError) {
-                    store.dispatch(logoutSuccess()); // e suficient sau trebe api?
+                    store.dispatch(logoutSuccess());
 
                     processQueue(refreshError, data["access_token"]);
 
