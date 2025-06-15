@@ -16,7 +16,6 @@ import HomePage from "./pages/HomePage.jsx";
 import SelectOfficePage from "./OfficeSchedule/SelectOfficePage.jsx";
 import MyselfDoctorSchedulePage from "./DoctorSchedule/MyDoctorSchedulePage.jsx";
 import MyAppointmentsPage from "./MyAppointmentsPage.jsx";
-import ContactWidget from "./pages/ContactWidget.jsx";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage.jsx";
 import EmployeeManageUsersPage from "./EmployeeManageUsersPage.jsx";
 import MakePatientAppointmentPage from "./PatientMakeAppointment/MakePatientAppointmentPage.jsx";

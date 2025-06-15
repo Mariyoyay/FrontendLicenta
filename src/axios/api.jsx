@@ -3,7 +3,7 @@ import store from "../redux/store.jsx";
 import {loginSuccess, logoutSuccess} from "../redux/authSlice.jsx";
 import {data} from "react-router-dom";
 
-const SERVER_IP_ADDRESS = "localhost";
+const SERVER_IP_ADDRESS = "192.168.0.97";
 
 const api = axios.create({
     baseURL: `https://${SERVER_IP_ADDRESS}:8443`,
