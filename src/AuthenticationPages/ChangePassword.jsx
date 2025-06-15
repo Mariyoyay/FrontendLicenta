@@ -4,6 +4,7 @@ import api from "../axios/api.jsx";
 import {useDispatch} from "react-redux";
 import {logoutSuccess} from "../redux/authSlice.jsx";
 import store from "../redux/store.jsx";
+import PasswordInput from "./PasswordInput.jsx";
 
 function ChangePassword() {
     const navigate = useNavigate();
@@ -17,6 +18,8 @@ function ChangePassword() {
     const [isVerified, setIsVerified] = useState(false);
     const [error, setError] = useState('');
     const [sendingCode, setSendingCode] = useState(false);
+    const [passwordValid, setPasswordValid] = useState(false);
+
 
     // Timer countdown
     useEffect(() => {
@@ -43,6 +46,11 @@ function ChangePassword() {
     };
 
     const handleSendVerification = () => {
+        if (!passwordValid) {
+            alert("Password entered is invalid");
+            return;
+        }
+
         setSendingCode(true);
 
         const askForVerificationCode = async () => {
@@ -108,14 +116,14 @@ function ChangePassword() {
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                     />
-                    <input
-                        type="password"
-                        value={password || ''}
+                    <PasswordInput
                         placeholder="Enter your new Password"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            setPasswordValid(e.isValid);
+                        }}
                         className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                     />
+                    />
 
                     <button
                         onClick={() => {

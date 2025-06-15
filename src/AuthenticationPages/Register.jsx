@@ -7,11 +7,13 @@ import { register } from "../axios/authService.jsx";
 import DatePicker, {registerLocale} from "react-datepicker";
 import enGB from "date-fns/locale/en-GB";
 import PageWithTopAndSideBar from "../pages/PageWithTopAndSideBar.jsx";
+import PasswordInput from "./PasswordInput.jsx";
 
 function Register() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [acceptPolicy, setAcceptPolicy] = useState(false);
+    const [passwordValid, setPasswordValid] = useState(false);
 
     const [userDetails, setUserDetails] = useState({
         firstName: "",
@@ -25,6 +27,12 @@ function Register() {
     registerLocale("en-GB", enGB);
 
     const handleRegister = async (e) => {
+
+        if (!passwordValid) {
+            alert("Password introduced is not valid");
+            return;
+        }
+
         e.preventDefault();
         await dispatch(register(userDetails));
         navigate("/login");
@@ -87,12 +95,11 @@ function Register() {
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                             Password
                         </label>
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            onChange={(e) => setUserDetails({...userDetails, password: e.target.value})}
-                            required
+                        <PasswordInput
+                            onChange={(e) => {
+                                setUserDetails({...userDetails, password: e.target.value});
+                                setPasswordValid(e.isValid);
+                            }}
                             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
                     </div>
